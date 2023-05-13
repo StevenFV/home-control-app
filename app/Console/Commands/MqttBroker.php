@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use PhpMqtt\Client\Contracts\MqttClient;
 use PhpMqtt\Client\Facades\MQTT;
 
 class MqttBroker extends Command
@@ -13,36 +14,69 @@ class MqttBroker extends Command
      * @var string
      */
     protected $signature = 'app:mqtt-broker';
-
     /**
      * The console command description.
      *
      * @var string
      */
     protected $description = 'MQTT broker publish subscribe tests';
-
+    protected array $allLightsGroup = [
+        'LIGHT_ENTRANCE_01',
+        'LIGHT_ENTRANCE_02',
+        'LIGHT_FRONT_PATIO',
+        'LIGHT_BACK_PATIO_01',
+        'LIGHT_BACK_PATIO_02',
+        'LIGHT_GARAGE_SIDE'
+    ];
+    protected array $allLightsQuestion = [
+        'ALL_LIGHTS_ON',
+        'ALL_LIGHTS_OFF'
+    ];
+    protected string $stateOn = 'ON';
+    protected string $stateOff = 'OFF';
+    protected string $stateToggle = 'TOGGLE';
+    protected function setLightState(string $topic, string $state): void
+    {
+        MQTT::publish("zigbee2mqtt/$topic/set", '{"state":"' . $state . '"}');
+    }
+    protected function getLightState(string $topic): void
+    {
+        // TODOSFV Find how exit loop after receiving this message
+        MQTT::connection()->subscribe("zigbee2mqtt/$topic", function (string $topic, string $message) {
+            echo sprintf('Received QoS level 1 message on topic [%s]: %s', $topic, $message);
+        }, 1);
+        MQTT::publish("zigbee2mqtt/$topic/get", '{"state":""}');
+        echo 'STARTING LOOP: ';
+        MQTT::connection()->loop(true, true, 5);
+        echo 'EXIT LOOP';
+        MQTT::disconnect();
+    }
+    protected function setAllLightsState(string $state): void
+    {
+        foreach ($this->allLightsGroup as $topic) {
+            MQTT::publish("zigbee2mqtt/$topic/set", '{"state":"' . $state . '"}');
+        }
+    }
     /**
      * Execute the console command.
      */
     public function handle(): void
     {
-        echo 'SWITCH ALL LIGHTS ON';
+        $request = $this->choice(
+            'What light do you want to toggle?',
+            array_merge($this->allLightsGroup, $this->allLightsQuestion),
+            0
+        );
 
-        MQTT::publish('zigbee2mqtt/LIGHT_BACK_PATIO_01/set', '{"state":"TOGGLE"}'); // ON OFF TOGGLE
-        MQTT::publish('zigbee2mqtt/LIGHT_ENTRANCE_01/set', '{"state":"TOGGLE"}'); // ON OFF TOGGLE
-        MQTT::publish('zigbee2mqtt/0x680ae2fffe43784f/set', '{"state":"TOGGLE"}'); // ON OFF TOGGLE
-        MQTT::publish('zigbee2mqtt/LIGHT_BACK_PATIO_02/set', '{"state":"TOGGLE"}'); // ON OFF TOGGLE
-        MQTT::publish('zigbee2mqtt/LIGHT_GARAGE_SIDE/set', '{"state":"TOGGLE"}'); // ON OFF TOGGLE
-        MQTT::publish('zigbee2mqtt/LIGHT_ENTRANCE_02', '{"state":"TOGGLE"}'); // ON OFF TOGGLE
+//        $this->setLightState($request, $this->stateToggle);
+        $this->getLightState($request);
 
-//        MQTT::publish('zigbee2mqtt/0x680ae2fffe42d1ec/get', '{"state":""}');
-
-        /** @var \PhpMqtt\Client\Contracts\MqttClient $mqtt */
-//        $mqtt = MQTT::connection();
-//        $mqtt->subscribe('zigbee2mqtt/0x680ae2fffe42d1ec', function (string $topic, string $message) {
-//            echo sprintf('Received QoS level 1 message on topic [%s]: %s', $topic, $message);
-//        }, 1);
-//        $mqtt->loop(true);
-
+        if ($request === 'ALL_LIGHTS_ON') {
+            $this->setAllLightsState($this->stateOn);
+        }
+        if ($request === 'ALL_LIGHTS_OFF') {
+            $this->setAllLightsState($this->stateOff);
+        }
+        /** @var MqttClient $mqtt */ // TODOSFV Need this???
     }
 }
