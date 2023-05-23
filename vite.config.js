@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+import i18n from 'laravel-vue-i18n/vite'
 
 // Use this link technic for access VITE_ variables of .env
 // https://stackoverflow.com/questions/66389043/how-can-i-use-vite-env-variables-in-vite-config-js
@@ -24,6 +25,7 @@ export default ({mode}) =>
                     },
                 },
             }),
+            i18n(),
         ],
         server: {
             host: '0.0.0.0',

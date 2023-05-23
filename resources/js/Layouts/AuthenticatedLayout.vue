@@ -6,6 +6,7 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -70,6 +71,13 @@ const showingNavigationDropdown = ref(false);
                                         </DropdownLink>
                                     </template>
                                 </Dropdown>
+                            </div>
+                            <!-- TODOSFV Add tooltip on globe with 'Switch language' text -->
+                            <div class="shrink-0">
+                                <Link :href="route('locale', { locale: $page.props.locale })" as="button"
+                                      class="px-2 mr-2 text-primary">
+                                    <font-awesome-icon :icon="['fas', 'globe']"/>
+                                </Link>
                             </div>
                         </div>
 

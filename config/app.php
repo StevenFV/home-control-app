@@ -69,7 +69,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'America/Toronto',
 
     /*
     |--------------------------------------------------------------------------
@@ -83,6 +83,7 @@ return [
     */
 
     'locale' => 'en',
+    // 'locales' Actually switch langages is managed by locale route in web.php
 
     /*
     |--------------------------------------------------------------------------
