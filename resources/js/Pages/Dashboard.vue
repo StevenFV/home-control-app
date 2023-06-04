@@ -5,11 +5,11 @@ import { trans } from 'laravel-vue-i18n';
 </script>
 
 <template>
-    <Head :title="$t('app.dashboard')" />
+    <Head :title="trans('dashboard.dashboard')" />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ $t('app.dashboard') }}</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ trans('dashboard.dashboard') }}</h2>
         </template>
 
         <div class="py-12">
