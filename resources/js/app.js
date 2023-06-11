@@ -9,8 +9,18 @@ import { i18nVue } from 'laravel-vue-i18n';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faGlobe } from '@fortawesome/free-solid-svg-icons'
+import PrimeVue from 'primevue/config';
+import ConfirmationService from 'primevue/confirmationservice';
+import ToastService from 'primevue/toastservice';
+import Tooltip from 'primevue/tooltip';
+import '../css/primevue-theme.css';
+import 'primevue/resources/primevue.min.css';
+import 'primeicons/primeicons.css'; // ex: les icônes pour sorter dans les DataTables
+import PrimeLocale from "@/primeLocale";
+import RouterLink from '@/Components/RouterLink.vue';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
+const appLocale = window.document.getElementsByTagName('html')[0]?.lang || 'en';
 
 library.add(faGlobe)
 
@@ -28,6 +38,13 @@ createInertiaApp({
                 }
             })
             .component('font-awesome-icon', FontAwesomeIcon)
+            .use(PrimeVue, { locale: PrimeLocale[appLocale] })
+            .use(ConfirmationService)
+            .use(ToastService)
+            .directive('tooltip',Tooltip)
+            // Workaround pour PrimeVue qui appelle router-link, car il s'attend que Vue-router soit installé,
+            // alors que l'app utilise Inertia pour la navigation
+            .component('router-link', RouterLink)
             .mount(el);
     },
     progress: {
