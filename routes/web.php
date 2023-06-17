@@ -38,9 +38,9 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/lights', function () {
-    return Inertia::render('Equipments/LightItems');
-})->middleware(['auth', 'verified'])->name('lights');
+Route::get('/lighting', function () {
+    return Inertia::render('Lighting/index');
+})->middleware(['auth', 'verified'])->name('lighting');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
