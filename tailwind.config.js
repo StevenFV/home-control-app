@@ -14,6 +14,7 @@ module.exports = {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            // todosfv - configure primary and secondary colors with app.css
             colors: {
                 primary: 'rgb(var(--color-primary) / <alpha-value)',
                 secondary: 'rgb(var(--color-secondary) / <alpha-value)'
