@@ -8,7 +8,10 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { trans } from "laravel-vue-i18n";
+import {usePermissions} from "@/Composables/usePermissions";
 
+const {hasPermission} = usePermissions()
+const {hasRole} = usePermissions()
 const showingNavigationDropdown = ref(false);
 </script>
 
@@ -34,7 +37,7 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     {{ trans('dashboard.dashboard') }}
                                 </NavLink>
-                                <NavLink :href="route('lighting')" :active="route().current('lighting')">
+                                <NavLink v-if="hasPermission('edit_permission')" :href="route('lighting')" :active="route().current('lighting')">
                                     {{ trans('lighting.index') }}
                                 </NavLink>
                             </div>
@@ -69,7 +72,7 @@ const showingNavigationDropdown = ref(false);
                                     </template>
 
                                     <template #content>
-                                        <DropdownLink :href="route('profile.edit')"> {{ trans('app.profile') }} </DropdownLink>
+                                        <DropdownLink v-if="hasRole('admin_role')" :href="route('profile.edit')"> {{ trans('app.profile') }} </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             {{ trans('app.logout') }}
                                         </DropdownLink>

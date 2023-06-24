@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Lighting\LightController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Session;
@@ -34,18 +35,22 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::group(['middleware' => ['permission:read_permission']], function () {
+        Route::get('/dashboard', function () {
+            return Inertia::render('Dashboard');
+        })->name('dashboard');
+    });
 
-Route::get('/lighting', function () {
-    return Inertia::render('Lighting/index');
-})->middleware(['auth', 'verified'])->name('lighting');
+    Route::group(['middleware' => ['permission:edit_permission']], function () {
+        Route::get('/lighting', [LightController::class, 'index'])->name('lighting');
+    });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::group(['middleware' => ['role:admin_role']], function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
 });
 
 require __DIR__ . '/auth.php';
