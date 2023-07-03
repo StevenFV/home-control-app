@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail; todosfv: setup email verification && method for acceptation of new user && remember_token public.users table
+// use Illuminate\Contracts\Auth\MustVerifyEmail; todosfv: setup email verification && remember_token public.users table && delete link register && make profile page with User table and Add User button
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
