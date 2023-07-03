@@ -37,7 +37,7 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     {{ trans('dashboard.dashboard') }}
                                 </NavLink>
-                                <NavLink v-if="hasPermission('edit_permission')" :href="route('lighting')" :active="route().current('lighting')">
+                                <NavLink v-if="hasPermission('edit')" :href="route('lighting')" :active="route().current('lighting')">
                                     {{ trans('lighting.index') }}
                                 </NavLink>
                             </div>
@@ -72,7 +72,7 @@ const showingNavigationDropdown = ref(false);
                                     </template>
 
                                     <template #content>
-                                        <DropdownLink v-if="hasRole('admin_role')" :href="route('profile.edit')"> {{ trans('app.profile') }} </DropdownLink>
+                                        <DropdownLink v-if="hasRole('admin')" :href="route('profile.edit')"> {{ trans('app.profile') }} </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             {{ trans('app.logout') }}
                                         </DropdownLink>
