@@ -13,18 +13,18 @@ const props = defineProps({
 })
 
 const subscribe = ref({
-    topic: props?.subscribeTopicMessage?.subscribeLightingTopic,
-    energy: props?.subscribeTopicMessage?.subscribeLightingMessage?.energy,
-    linkquality: props?.subscribeTopicMessage?.subscribeLightingMessage?.linkquality,
-    power: props?.subscribeTopicMessage?.subscribeLightingMessage?.power,
-    state: props?.subscribeTopicMessage?.subscribeLightingMessage?.state
+    topic: props?.subscribeTopicMessage?.lightingSubscribeTopic,
+    energy: props?.subscribeTopicMessage?.lightingSubscribeMessage?.energy,
+    linkquality: props?.subscribeTopicMessage?.lightingSubscribeMessage?.linkquality,
+    power: props?.subscribeTopicMessage?.lightingSubscribeMessage?.power,
+    state: props?.subscribeTopicMessage?.lightingSubscribeMessage?.state
 })
 
 const state = ref(subscribe.value.state === 'ON');
 </script>
 
 <template>
-    <Head :title="trans('lighting.index')"/>
+    <Head :title="trans('lighting.index')" />
 
     <AuthenticatedLayout>
         <template #header>

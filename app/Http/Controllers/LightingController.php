@@ -2,11 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-use PhpMqtt\Client\Facades\MQTT;
-use PhpMqtt\Client\MqttClient;
 
 class LightingController extends Controller
 {
@@ -33,21 +29,21 @@ class LightingController extends Controller
 
     public function getSubscribeTopicMessage(): array
     {
-        (string)$subscribeLightingTopic = app('subscribeLightingTopic');
-        (object)$subscribeLightingMessage = app('subscribeLightingMessage');
+        (string)$lightingSubscribeTopic = app('lightingSubscribeTopic');
+        (object)$lightingSubscribeMessage = app('lightingSubscribeMessage');
 
         return [
-            'subscribeLightingTopic' => $subscribeLightingTopic,
-            'subscribeLightingMessage' => $subscribeLightingMessage
+            'lightingSubscribeTopic' => $lightingSubscribeTopic,
+            'lightingSubscribeMessage' => $lightingSubscribeMessage
         ];
     }
 
     public function setPublishTopicMessage(): void
     {
 //        todosfv make in the same way of getSubscribeTopicMessage()
-//        $publishLightingTopic = app('subscribeLightingTopic');
+//        $publishLightingTopic = app('lightingSubscribeTopic');
 //        $publishLightingState = app('publishLightingState');
 //
-//        return [$subscribeLightingTopic, $subscribeLightingMessage];
+//        return [$lightingSubscribeTopic, $lightingSubscribeMessage];
     }
 }
