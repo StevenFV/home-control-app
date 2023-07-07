@@ -29,11 +29,9 @@ class LightingController extends Controller
 
     public function getSubscribeTopicMessage(): array
     {
-        (string)$lightingSubscribeTopic = app('lightingSubscribeTopic');
         (object)$lightingSubscribeMessage = app('lightingSubscribeMessage');
 
         return [
-            'lightingSubscribeTopic' => $lightingSubscribeTopic,
             'lightingSubscribeMessage' => $lightingSubscribeMessage
         ];
     }
@@ -41,9 +39,8 @@ class LightingController extends Controller
     public function setPublishTopicMessage(): void
     {
 //        todosfv make in the same way of getSubscribeTopicMessage()
-//        $publishLightingTopic = app('lightingSubscribeTopic');
 //        $publishLightingState = app('publishLightingState');
 //
-//        return [$lightingSubscribeTopic, $lightingSubscribeMessage];
+//        return [$lightingSubscribeMessage];
     }
 }

@@ -12,15 +12,9 @@ const props = defineProps({
     }
 })
 
-const subscribe = ref({
-    topic: props?.subscribeTopicMessage?.lightingSubscribeTopic,
-    energy: props?.subscribeTopicMessage?.lightingSubscribeMessage?.energy,
-    linkquality: props?.subscribeTopicMessage?.lightingSubscribeMessage?.linkquality,
-    power: props?.subscribeTopicMessage?.lightingSubscribeMessage?.power,
-    state: props?.subscribeTopicMessage?.lightingSubscribeMessage?.state
-})
+const topics = Object.keys(props.subscribeTopicMessage.lightingSubscribeMessage);
 
-const state = ref(subscribe.value.state === 'ON');
+// const state = ref(subscribe.value.state === 'ON'); todosfv 2 way binding
 </script>
 
 <template>
@@ -28,14 +22,30 @@ const state = ref(subscribe.value.state === 'ON');
 
     <AuthenticatedLayout>
         <template #header>
-            <!-- todosfv add to lang make component -->
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ trans('lighting.{subscribe.topic}: ') + subscribe.energy }}
-            </h2>
-            {{ trans('Energy: ') + subscribe.energy }}<br>
-            {{ trans('Link quality: ') + subscribe.linkquality }}<br>
-            {{ trans('Kwh: ') + subscribe.power }}<br>
-            <InputSwitch v-model="state" />
+            <!-- todosfv add to lang and make component -->
+            <div class="grid grid-cols-3 gap-6">
+                <div
+                    v-for="topic in topics"
+                    :key="topic"
+                    class="bg-yellow-100 shadow-lg rounded-lg overflow-hidden m-6 col-3"
+                >
+                    <div class="text-center pt-2 font-semibold text-xl text-gray-800 leading-tight">
+                        {{ topic }}
+                    </div>
+                    <div class="p-4">
+                        {{
+                            trans('Link quality: ') + props.subscribeTopicMessage.lightingSubscribeMessage[topic].energy
+                        }}<br>
+                        {{
+                            trans('Link quality: ') + props.subscribeTopicMessage.lightingSubscribeMessage[topic].linkquality
+                        }}<br>
+                        {{
+                            trans('Link quality: ') + props.subscribeTopicMessage.lightingSubscribeMessage[topic].power
+                        }}<br>
+                        <InputSwitch v-model="state" />
+                    </div>
+                </div>
+            </div>
         </template>
     </AuthenticatedLayout>
 </template>

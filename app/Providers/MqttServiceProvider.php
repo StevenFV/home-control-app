@@ -37,26 +37,31 @@ class MqttServiceProvider extends ServiceProvider
     public function lightingSubscribe()
     {
         $mqtt = MQTT::connection();
-        $lightingSubscribeTopic = null;
         $lightingSubscribeMessage = null;
         (array)$deviceSubscribe = app('deviceSubscribe');
-        $allLightingDevice = collect($deviceSubscribe)->pluck('friendly_name')->except([0]);
-        // todosfv find methode for make a collection with all devices with messages or create a new function in the LightingController
-        foreach ($allLightingDevice as $lighting) {
-            $mqtt->subscribe("zigbee2mqtt/+", function (string $topic, string $message) use ($mqtt, &$lightingSubscribeTopic, &$lightingSubscribeMessage) {
-                // Remove elements before and including the last forward slash
-                $lightingSubscribeTopic = substr($topic, strrpos($topic, '/') + 1);
-                $lightingSubscribeMessage = json_decode($message);
+        $allDevices = collect($deviceSubscribe)->pluck('friendly_name')->except([0]);
 
+        // Subscribe to all topics outside the loop
+        $mqtt->subscribe("zigbee2mqtt/+", function (string $topic, string $message) use ($mqtt, &$lightingSubscribeMessage, $allDevices) {
+            $lightingSubscribeTopic = substr($topic, strrpos($topic, '/') + 1);
+            $lightingSubscribeMessage[$lightingSubscribeTopic] = json_decode($message);
+
+            /** @var array $lightingSubscribeMessage */
+            // Check if all devices have received messages
+            if (count($lightingSubscribeMessage) === count($allDevices)) {
+                // Unsubscribe and disconnect after all devices have received messages
                 $mqtt->unsubscribe("zigbee2mqtt/+");
                 $mqtt->disconnect();
-            }, 1);
+            }
+        }, 1);
+
+        // Publish messages for all devices
+        foreach ($allDevices as $device) {
+            MQTT::publish("zigbee2mqtt/$device/get", '{"state":""}');
         }
-        MQTT::publish("zigbee2mqtt/$lighting/get", '{"state":""}');
 
         $mqtt->loop(false, true);
 
-        $this->app->instance('lightingSubscribeTopic', $lightingSubscribeTopic);
         $this->app->instance('lightingSubscribeMessage', $lightingSubscribeMessage);
     }
 }
