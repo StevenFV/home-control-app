@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Providers\MqttServiceProvider;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class LightingController extends Controller
@@ -36,11 +39,12 @@ class LightingController extends Controller
         ];
     }
 
-    public function setPublishTopicMessage(): void
+    public function setPublishTopicMessage(Request $request): JsonResponse
     {
-//        todosfv make in the same way of getSubscribeTopicMessage()
-//        $publishLightingState = app('publishLightingState');
-//
-//        return [$lightingSubscribeMessage];
+        $changedItemTopic = $request->input('changedItem.topic');
+
+        app(MqttServiceProvider::class)->lightingPublishToggle($changedItemTopic);
+
+        return response()->json(['message' => 'Request received successfully']);
     }
 }

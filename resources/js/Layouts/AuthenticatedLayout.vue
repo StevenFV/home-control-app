@@ -37,7 +37,7 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     {{ trans('dashboard.dashboard') }}
                                 </NavLink>
-                                <NavLink v-if="hasPermission('edit')" :href="route('lighting')" :active="route().current('lighting')">
+                                <NavLink v-if="hasPermission('edit')" :href="route('lighting.index')" :active="route().current('lighting')">
                                     {{ trans('lighting.index') }}
                                 </NavLink>
                             </div>

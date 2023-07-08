@@ -13,8 +13,13 @@ class MqttServiceProvider extends ServiceProvider
 
     public function register(): void
     {
+        $this->app->bind(MqttServiceProvider::class, function ($app) {
+            return new MqttServiceProvider($app);
+        });
+
         $this->deviceSubscribe();
-        $this->lightingSubscribe();
+        $this->lightingSubscribeMessage();
+        $this->lightingPublishToggle($topic = '');
     }
 
     public function deviceSubscribe(): void
@@ -34,7 +39,7 @@ class MqttServiceProvider extends ServiceProvider
         $this->app->instance('deviceSubscribe', $deviceSubscribe);
     }
 
-    public function lightingSubscribe()
+    public function lightingSubscribeMessage()
     {
         $mqtt = MQTT::connection();
         $lightingSubscribeMessage = null;
@@ -63,5 +68,10 @@ class MqttServiceProvider extends ServiceProvider
         $mqtt->loop(false, true);
 
         $this->app->instance('lightingSubscribeMessage', $lightingSubscribeMessage);
+    }
+
+    public function lightingPublishToggle(string $topic): void
+    {
+        MQTT::publish("zigbee2mqtt/$topic/set", '{"state": "TOGGLE"}');
     }
 }

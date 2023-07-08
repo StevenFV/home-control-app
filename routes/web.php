@@ -43,7 +43,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::group(['middleware' => ['permission:edit']], function () {
-        Route::get('/lighting', [LightingController::class, 'index'])->name('lighting');
+        Route::get('/lighting', [LightingController::class, 'index'])->name('lighting.index');
+        Route::post('/lighting/set', [LightingController::class, 'setPublishTopicMessage'])->name('lighting.set');
     });
 
     Route::group(['middleware' => ['role:admin']], function () {

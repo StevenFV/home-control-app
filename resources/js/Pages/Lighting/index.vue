@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputSwitch from 'primevue/inputswitch';
+import axios from 'axios';
 import {Head} from "@inertiajs/vue3";
 import {computed, reactive, watch} from 'vue';
 import {trans} from "laravel-vue-i18n";
@@ -25,11 +26,32 @@ const lightingStates = computed(() => {
     }));
 });
 
-watch(lightingStates, (newStates) => {
-    // todosfv publish mqtt state and review all this solution (foreach in mqtt controller and two way binding vue.js)
-    // Call the Laravel controller function here with the new lighting states
-    // You can use AJAX, Axios, or any other method to send the data to the server
-});
+// todosfv review all this solution (foreach in mqtt controller and two way binding/watch/setPublishTopicMessage&&lightingPublishToggle vue.js)
+// todosfv ajuste try and catch and LightingController@setPublishTopicMessage response
+watch(
+    lightingStates,
+    async (newStates, oldStates) => {
+        const changedKey = Object.keys(newStates).find(key => newStates[key].state !== oldStates[key].state);
+
+        if (changedKey) {
+            const changedItem = newStates[changedKey];
+            console.log('Item state changed:', changedItem.state);
+
+            try {
+                // Make the HTTP request to your Laravel route
+                const response = await axios.post(route('lighting.set'), {
+                    changedItem: changedItem
+                });
+                // Handle the response from the controller if needed
+                console.log(response.data);
+            } catch (error) {
+                // Handle any error that occurs during the request
+                console.error(error);
+            }
+        }
+    },
+    {deep: true}
+);
 </script>
 
 <template>
