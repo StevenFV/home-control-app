@@ -5,6 +5,6 @@ return [
     "register" => "Register",
     "login" => "Log in",
     "logout" => "Log out",
-    "logged" => "You're logged in!",
+    "logged" => "Welcome to your Home Control App, :userName!",
     "profile" => "Profile"
 ];

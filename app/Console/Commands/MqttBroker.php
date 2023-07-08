@@ -13,7 +13,7 @@ class MqttBroker extends Command
      *
      * @var string
      */
-    protected $signature = 'app:mqtt-broker';
+    protected $signature = 'app:mqtt';
     /**
      * The console command description.
      *
@@ -41,15 +41,13 @@ class MqttBroker extends Command
     }
     protected function getLightState(string $topic): void
     {
-        // TODOSFV Find how exit loop after receiving this message
         MQTT::connection()->subscribe("zigbee2mqtt/$topic", function (string $topic, string $message) {
             echo sprintf('Received QoS level 1 message on topic [%s]: %s', $topic, $message);
+            MQTT::unsubscribe("zigbee2mqtt/+");
+            MQTT::disconnect();
         }, 1);
         MQTT::publish("zigbee2mqtt/$topic/get", '{"state":""}');
-        echo 'STARTING LOOP: ';
         MQTT::connection()->loop(true, true, 5);
-        echo 'EXIT LOOP';
-        MQTT::disconnect();
     }
     protected function setAllLightsState(string $state): void
     {
@@ -77,6 +75,5 @@ class MqttBroker extends Command
         if ($request === 'ALL_LIGHTS_OFF') {
             $this->setAllLightsState($this->stateOff);
         }
-        /** @var MqttClient $mqtt */ // TODOSFV Need this???
     }
 }
