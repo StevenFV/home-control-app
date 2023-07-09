@@ -14,6 +14,9 @@ module.exports = {
             'alignAttributesVertically': true,
             'ignores': [],
         }],
+        'vue/html-closing-bracket-spacing': ['error', {
+            selfClosingTag: 'never'
+        }],
     },
     'overrides': [
         {
