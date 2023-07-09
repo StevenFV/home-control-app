@@ -8,8 +8,8 @@ import {trans} from "laravel-vue-i18n";
 
 const props = defineProps({
     subscribeTopicMessage: {
-        type: Object, default: () => {
-        }
+        type: Object,
+        default: null,
     }
 })
 
@@ -55,7 +55,7 @@ watch(
 </script>
 
 <template>
-    <Head :title="trans('lighting.index')" />
+    <Head :title="trans('lighting.index')"/>
 
     <AuthenticatedLayout>
         <template #header>
@@ -79,7 +79,7 @@ watch(
                         {{
                             trans('Link quality: ') + props.subscribeTopicMessage.lightingSubscribeMessage[lighting.topic].power
                         }}<br>
-                        <InputSwitch v-model="state[lighting.topic]" />
+                        <InputSwitch v-model="state[lighting.topic]"/>
                     </div>
                 </div>
             </div>

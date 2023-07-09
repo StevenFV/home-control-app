@@ -2,12 +2,15 @@
 import { Link } from '@inertiajs/vue3';
 
 defineProps({
-    to: String,
+    to: {
+        type: String,
+        default: null,
+    }
 });
 </script>
 
 <template>
     <Link :href="to">
-        <slot />
+        <slot/>
     </Link>
 </template>

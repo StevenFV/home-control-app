@@ -5,7 +5,7 @@ import { trans } from 'laravel-vue-i18n';
 </script>
 
 <template>
-    <Head :title="trans('dashboard.dashboard')" />
+    <Head :title="trans('dashboard.dashboard')"/>
 
     <AuthenticatedLayout>
         <template #header>

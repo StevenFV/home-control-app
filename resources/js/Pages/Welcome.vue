@@ -27,32 +27,39 @@ defineProps({
     <div
         class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white"
     >
-        <div v-if="canLogin" class="sm:fixed sm:top-0 sm:right-0 p-6 text-right">
+        <div
+            v-if="canLogin"
+            class="sm:fixed sm:top-0 sm:right-0 p-6 text-right"
+        >
             <Link
                 v-if="$page.props.auth.user"
                 :href="route('dashboard')"
                 class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-            >{{ trans('dashboard.dashboard') }}
-            </Link
             >
+                {{ trans('dashboard.dashboard') }}
+            </Link>
 
             <template v-else>
                 <Link
                     :href="route('login')"
                     class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                >{{ trans('app.login') }}
+                >
+                    {{ trans('app.login') }}
                 </Link>
 
                 <Link
                     v-if="canRegister"
                     :href="route('register')"
                     class="ml-4 font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                >{{ trans('app.register') }}
+                >
+                    {{ trans('app.register') }}
                 </Link>
                 <!-- TODOSFV Add tooltip on globe with 'Switch language' text -->
                 <Link
-                    :href="route('locale', { locale: $page.props.locale })" as="button"
-                    class="px-2 mr-2 text-white">
+                    :href="route('locale', { locale: $page.props.locale })"
+                    as="button"
+                    class="px-2 mr-2 text-white"
+                >
                     <font-awesome-icon :icon="['fas', 'globe']"/>
                 </Link>
             </template>
@@ -237,62 +244,54 @@ defineProps({
                                 </svg>
                             </div>
 
-                            <h2 class="mt-6 text-xl font-semibold text-gray-900 dark:text-white">Vibrant Ecosystem</h2>
+                            <h2 class="mt-6 text-xl font-semibold text-gray-900 dark:text-white">
+                                Vibrant Ecosystem
+                            </h2>
 
                             <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
                                 Laravel's robust library of first-party tools and libraries, such as
                                 <a
                                     href="https://forge.laravel.com"
                                     class="underline hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                                    >Forge</a
-                                >,
+                                >Forge</a>,
                                 <a
                                     href="https://vapor.laravel.com"
                                     class="underline hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                                    >Vapor</a
-                                >,
+                                >Vapor</a>,
                                 <a
                                     href="https://nova.laravel.com"
                                     class="underline hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                                    >Nova</a
-                                >, and
+                                >Nova</a>, and
                                 <a
                                     href="https://envoyer.io"
                                     class="underline hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                                    >Envoyer</a
-                                >
+                                >Envoyer</a>
                                 help you take your projects to the next level. Pair them with powerful open source
                                 libraries like
                                 <a
                                     href="https://laravel.com/docs/billing"
                                     class="underline hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                                    >Cashier</a
-                                >,
+                                >Cashier</a>,
                                 <a
                                     href="https://laravel.com/docs/dusk"
                                     class="underline hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                                    >Dusk</a
-                                >,
+                                >Dusk</a>,
                                 <a
                                     href="https://laravel.com/docs/broadcasting"
                                     class="underline hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                                    >Echo</a
-                                >,
+                                >Echo</a>,
                                 <a
                                     href="https://laravel.com/docs/horizon"
                                     class="underline hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                                    >Horizon</a
-                                >,
+                                >Horizon</a>,
                                 <a
                                     href="https://laravel.com/docs/sanctum"
                                     class="underline hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                                    >Sanctum</a
-                                >,
+                                >Sanctum</a>,
                                 <a
                                     href="https://laravel.com/docs/telescope"
                                     class="underline hover:text-gray-700 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                                    >Telescope</a
-                                >, and more.
+                                >Telescope</a>, and more.
                             </p>
                         </div>
                     </div>

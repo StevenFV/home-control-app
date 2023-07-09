@@ -1,13 +1,13 @@
 <script setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { trans } from "laravel-vue-i18n";
+import {Link} from '@inertiajs/vue3';
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+import {trans} from "laravel-vue-i18n";
 import {usePermissions} from "@/Composables/usePermissions";
 
 const {hasPermission} = usePermissions()
@@ -34,10 +34,17 @@ const showingNavigationDropdown = ref(false);
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                <NavLink
+                                    :href="route('dashboard')"
+                                    :active="route().current('dashboard')"
+                                >
                                     {{ trans('dashboard.dashboard') }}
                                 </NavLink>
-                                <NavLink v-if="hasPermission('edit')" :href="route('lighting.index')" :active="route().current('lighting')">
+                                <NavLink
+                                    v-if="hasPermission('edit')"
+                                    :href="route('lighting.index')"
+                                    :active="route().current('lighting')"
+                                >
                                     {{ trans('lighting.index') }}
                                 </NavLink>
                             </div>
@@ -46,7 +53,10 @@ const showingNavigationDropdown = ref(false);
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
                             <!-- Settings Dropdown -->
                             <div class="ml-3 relative">
-                                <Dropdown align="right" width="48">
+                                <Dropdown
+                                    align="right"
+                                    width="48"
+                                >
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
                                             <button
@@ -72,8 +82,17 @@ const showingNavigationDropdown = ref(false);
                                     </template>
 
                                     <template #content>
-                                        <DropdownLink v-if="hasRole('admin')" :href="route('profile.edit')"> {{ trans('app.profile') }} </DropdownLink>
-                                        <DropdownLink :href="route('logout')" method="post" as="button">
+                                        <DropdownLink
+                                            v-if="hasRole('admin')"
+                                            :href="route('profile.edit')"
+                                        >
+                                            {{ trans('app.profile') }}
+                                        </DropdownLink>
+                                        <DropdownLink
+                                            :href="route('logout')"
+                                            method="post"
+                                            as="button"
+                                        >
                                             {{ trans('app.logout') }}
                                         </DropdownLink>
                                     </template>
@@ -81,8 +100,11 @@ const showingNavigationDropdown = ref(false);
                             </div>
                             <!-- TODOSFV Add tooltip on globe with 'Switch language' text -->
                             <div class="shrink-0">
-                                <Link :href="route('locale', { locale: $page.props.locale })" as="button"
-                                      class="px-2 mr-2 text-primary">
+                                <Link
+                                    :href="route('locale', { locale: $page.props.locale })"
+                                    as="button"
+                                    class="px-2 mr-2 text-primary"
+                                >
                                     <font-awesome-icon :icon="['fas', 'globe']"/>
                                 </Link>
                             </div>
@@ -91,10 +113,15 @@ const showingNavigationDropdown = ref(false);
                         <!-- Hamburger -->
                         <div class="-mr-2 flex items-center sm:hidden">
                             <button
-                                @click="showingNavigationDropdown = !showingNavigationDropdown"
                                 class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
+                                @click="showingNavigationDropdown = !showingNavigationDropdown"
                             >
-                                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                <svg
+                                    class="h-6 w-6"
+                                    stroke="currentColor"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
                                     <path
                                         :class="{
                                             hidden: showingNavigationDropdown,
@@ -127,7 +154,10 @@ const showingNavigationDropdown = ref(false);
                     class="sm:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                        <ResponsiveNavLink
+                            :href="route('dashboard')"
+                            :active="route().current('dashboard')"
+                        >
                             Dashboard
                         </ResponsiveNavLink>
                     </div>
@@ -138,12 +168,20 @@ const showingNavigationDropdown = ref(false);
                             <div class="font-medium text-base text-gray-800">
                                 {{ $page.props.auth.user.name }}
                             </div>
-                            <div class="font-medium text-sm text-gray-500">{{ $page.props.auth.user.email }}</div>
+                            <div class="font-medium text-sm text-gray-500">
+                                {{ $page.props.auth.user.email }}
+                            </div>
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')"> Profile </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('logout')" method="post" as="button">
+                            <ResponsiveNavLink :href="route('profile.edit')">
+                                Profile
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                :href="route('logout')"
+                                method="post"
+                                as="button"
+                            >
                                 Log Out
                             </ResponsiveNavLink>
                         </div>
@@ -152,15 +190,18 @@ const showingNavigationDropdown = ref(false);
             </nav>
 
             <!-- Page Heading -->
-            <header class="bg-white shadow" v-if="$slots.header">
+            <header
+                v-if="$slots.header"
+                class="bg-white shadow"
+            >
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <slot name="header" />
+                    <slot name="header"/>
                 </div>
             </header>
 
             <!-- Page Content -->
             <main>
-                <slot />
+                <slot/>
             </main>
         </div>
     </div>
