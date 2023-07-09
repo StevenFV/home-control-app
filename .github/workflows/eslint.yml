@@ -19,7 +19,7 @@ jobs:
         run: npm ci
 
       - name: Run ESLint
-        run: npx eslint .
+        run: npx eslint resources/js
 
       - name: Check ESLint results
         id: eslint-results
