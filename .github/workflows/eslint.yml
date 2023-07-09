@@ -20,16 +20,3 @@ jobs:
 
       - name: Run ESLint
         run: npx eslint resources/js
-
-      - name: Check ESLint results
-        id: eslint-results
-        run: echo "{name}={lint-passed::$(npx eslint . --format json | jq -r '.[0].errorCount == 0')}" >> $GITHUB_OUTPUT
-
-      - name: Push changes if ESLint passes
-        if: steps.eslint-results.outputs.lint-passed == 'true' || steps.eslint-results.outputs.lint-passed != 'warning'
-        run: |
-          git config --global user.name "StevenFV"
-          git config --global user.email "veilletsteven@hotmail.com"
-          git add .
-          git commit --amend --no-edit
-          git push
