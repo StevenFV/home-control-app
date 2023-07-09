@@ -1,17 +1,13 @@
 name: ESLint
 
-on:
-  push:
-    branches:
-      - master
-      - develop
+on: [push]
 
 jobs:
   eslint:
     runs-on: ubuntu-latest
 
     steps:
-      - name: ESLint Checkout code
+      - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Set up Node.js
@@ -23,4 +19,17 @@ jobs:
         run: npm ci
 
       - name: Run ESLint
-        run: eslint . --ext .js,.vue
+        run: npx eslint .
+
+      - name: Check ESLint results
+        id: eslint-results
+        run: echo "::set-output name=lint-passed::$(npx eslint . --format json | jq -r '.[0].errorCount == 0')"
+
+      - name: Push changes if ESLint passes
+        if: steps.eslint-results.outputs.lint-passed == 'true' || steps.eslint-results.outputs.lint-passed == 'warning'
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit --amend --no-edit
+          git push
