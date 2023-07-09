@@ -23,7 +23,7 @@ jobs:
 
       - name: Check ESLint results
         id: eslint-results
-        run: echo "::set-output name=lint-passed::$(npx eslint . --format json | jq -r '.[0].errorCount == 0')"
+        run: echo "{name}={lint-passed::$(npx eslint . --format json | jq -r '.[0].errorCount == 0')}" >> $GITHUB_OUTPUT
 
       - name: Push changes if ESLint passes
         if: steps.eslint-results.outputs.lint-passed == 'true' || steps.eslint-results.outputs.lint-passed != 'warning'
