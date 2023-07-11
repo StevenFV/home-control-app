@@ -6,7 +6,7 @@
 - PEST: ./vendor/bin/pest:
     - Update dependencies - With a check scheduled
     - Unit tests for automatic verification before push with a prompt for commit message:
-        - Delete GitHub action ESLint verification and add to this unit test
+        - GitHub action ESLint verification
         - PSR12
         - PHP_CodeSniffer: ./vendor/bin/phpcs - The file .phpcs.xml is already created
         - Psalm: ./vendor/bin/psalm
