@@ -27,12 +27,16 @@ class MqttServiceProvider extends ServiceProvider
         $mqtt = MQTT::connection();
         $deviceSubscribe = null;
 
-        $mqtt->subscribe("zigbee2mqtt/bridge/devices", function (string $topic, string $message) use ($mqtt, &$deviceSubscribe) {
-            $deviceSubscribe = json_decode($message);
+        $mqtt->subscribe(
+            "zigbee2mqtt/bridge/devices",
+            function (string $topic, string $message) use ($mqtt, &$deviceSubscribe) {
+                $deviceSubscribe = json_decode($message);
 
-            $mqtt->unsubscribe("zigbee2mqtt/bridge/devices");
-            $mqtt->disconnect();
-        }, 1);
+                $mqtt->unsubscribe("zigbee2mqtt/bridge/devices");
+                $mqtt->disconnect();
+            },
+            1
+        );
 
         $mqtt->loop(false, true);
 
@@ -47,18 +51,22 @@ class MqttServiceProvider extends ServiceProvider
         $allDevices = collect($deviceSubscribe)->pluck('friendly_name')->except([0]);
 
         // Subscribe to all topics outside the loop
-        $mqtt->subscribe("zigbee2mqtt/+", function (string $topic, string $message) use ($mqtt, &$lightingSubscribeMessage, $allDevices) {
-            $lightingSubscribeTopic = substr($topic, strrpos($topic, '/') + 1);
-            $lightingSubscribeMessage[$lightingSubscribeTopic] = json_decode($message);
+        $mqtt->subscribe(
+            "zigbee2mqtt/+",
+            function (string $topic, string $message) use ($mqtt, &$lightingSubscribeMessage, $allDevices) {
+                $lightingSubscribeTopic = substr($topic, strrpos($topic, '/') + 1);
+                $lightingSubscribeMessage[$lightingSubscribeTopic] = json_decode($message);
 
-            /** @var array $lightingSubscribeMessage */
-            // Check if all devices have received messages
-            if (count($lightingSubscribeMessage) === count($allDevices)) {
-                // Unsubscribe and disconnect after all devices have received messages
-                $mqtt->unsubscribe("zigbee2mqtt/+");
-                $mqtt->disconnect();
-            }
-        }, 1);
+                /** @var array $lightingSubscribeMessage */
+                // Check if all devices have received messages
+                if (count($lightingSubscribeMessage) === count($allDevices)) {
+                    // Unsubscribe and disconnect after all devices have received messages
+                    $mqtt->unsubscribe("zigbee2mqtt/+");
+                    $mqtt->disconnect();
+                }
+            },
+            1
+        );
 
         // Publish messages for all devices
         foreach ($allDevices as $device) {

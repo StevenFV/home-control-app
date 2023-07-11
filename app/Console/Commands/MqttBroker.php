@@ -35,26 +35,32 @@ class MqttBroker extends Command
     protected string $stateOn = 'ON';
     protected string $stateOff = 'OFF';
     protected string $stateToggle = 'TOGGLE';
+
     protected function setLightState(string $topic, string $state): void
     {
         MQTT::publish("zigbee2mqtt/$topic/set", '{"state":"' . $state . '"}');
     }
+
     protected function getLightState(string $topic): void
     {
         MQTT::connection()->subscribe("zigbee2mqtt/$topic", function (string $topic, string $message) {
+            // phpcs:disable
             echo sprintf('Received QoS level 1 message on topic [%s]: %s', $topic, $message);
+            // phpcs:enable
             MQTT::unsubscribe("zigbee2mqtt/+");
             MQTT::disconnect();
         }, 1);
         MQTT::publish("zigbee2mqtt/$topic/get", '{"state":""}');
         MQTT::connection()->loop(true, true, 5);
     }
+
     protected function setAllLightsState(string $state): void
     {
         foreach ($this->allLightsGroup as $topic) {
             MQTT::publish("zigbee2mqtt/$topic/set", '{"state":"' . $state . '"}');
         }
     }
+
     /**
      * Execute the console command.
      */

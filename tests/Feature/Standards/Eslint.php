@@ -1,5 +1,7 @@
 <?php
 
+namespace Standards;
+
 use Symfony\Component\Process\Process;
 use Tests\TestCase;
 
