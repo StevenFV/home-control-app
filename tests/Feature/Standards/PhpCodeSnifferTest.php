@@ -5,7 +5,7 @@ namespace Standards;
 use Symfony\Component\Process\Process;
 use Tests\TestCase;
 
-class PhpCodeSniffer extends TestCase
+class PhpCodeSnifferTest extends TestCase
 {
     /** @test */
     public function it_runs_phpcs_with_verification_for_warnings_and_errors(): void
