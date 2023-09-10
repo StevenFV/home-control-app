@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use PhpMqtt\Client\Exceptions\MqttClientException;
 use PhpMqtt\Client\Facades\MQTT;
 
 class MqttServiceProvider extends ServiceProvider
@@ -24,62 +25,74 @@ class MqttServiceProvider extends ServiceProvider
 
     public function deviceSubscribe(): void
     {
-        $mqtt = MQTT::connection();
-        $deviceSubscribe = null;
+        try {
+            $mqtt = MQTT::connection();
+            $deviceSubscribe = null;
 
-        $mqtt->subscribe(
-            "zigbee2mqtt/bridge/devices",
-            function (string $topic, string $message) use ($mqtt, &$deviceSubscribe) {
-                $deviceSubscribe = json_decode($message);
+            $mqtt->subscribe(
+                "zigbee2mqtt/bridge/devices",
+                function (string $topic, string $message) use ($mqtt, &$deviceSubscribe) {
+                    $deviceSubscribe = json_decode($message);
 
-                $mqtt->unsubscribe("zigbee2mqtt/bridge/devices");
-                $mqtt->disconnect();
-            },
-            1
-        );
+                    $mqtt->unsubscribe("zigbee2mqtt/bridge/devices");
+                    $mqtt->disconnect();
+                },
+                1
+            );
 
-        $mqtt->loop(false, true);
+            $mqtt->loop(false, true);
 
-        $this->app->instance('deviceSubscribe', $deviceSubscribe);
+            $this->app->instance('deviceSubscribe', $deviceSubscribe);
+        } catch (MqttClientException $e) {
+            echo " deviceSubscribe: " . $e->getMessage();
+        }
     }
 
     public function lightingSubscribeMessage()
     {
-        $mqtt = MQTT::connection();
-        $lightingSubscribeMessage = null;
-        (array)$deviceSubscribe = app('deviceSubscribe');
-        $allDevices = collect($deviceSubscribe)->pluck('friendly_name')->except([0]);
+        try {
+            $mqtt = MQTT::connection();
+            $lightingSubscribeMessage = null;
+            (array)$deviceSubscribe = app('deviceSubscribe');
+            $allDevices = collect($deviceSubscribe)->pluck('friendly_name')->except([0]);
 
-        // Subscribe to all topics outside the loop
-        $mqtt->subscribe(
-            "zigbee2mqtt/+",
-            function (string $topic, string $message) use ($mqtt, &$lightingSubscribeMessage, $allDevices) {
-                $lightingSubscribeTopic = substr($topic, strrpos($topic, '/') + 1);
-                $lightingSubscribeMessage[$lightingSubscribeTopic] = json_decode($message);
+            // Subscribe to all topics outside the loop
+            $mqtt->subscribe(
+                "zigbee2mqtt/+",
+                function (string $topic, string $message) use ($mqtt, &$lightingSubscribeMessage, $allDevices) {
+                    $lightingSubscribeTopic = substr($topic, strrpos($topic, '/') + 1);
+                    $lightingSubscribeMessage[$lightingSubscribeTopic] = json_decode($message);
 
-                /** @var array $lightingSubscribeMessage */
-                // Check if all devices have received messages
-                if (count($lightingSubscribeMessage) === count($allDevices)) {
-                    // Unsubscribe and disconnect after all devices have received messages
-                    $mqtt->unsubscribe("zigbee2mqtt/+");
-                    $mqtt->disconnect();
-                }
-            },
-            1
-        );
+                    /** @var array $lightingSubscribeMessage */
+                    // Check if all devices have received messages
+                    if (count($lightingSubscribeMessage) === count($allDevices)) {
+                        // Unsubscribe and disconnect after all devices have received messages
+                        $mqtt->unsubscribe("zigbee2mqtt/+");
+                        $mqtt->disconnect();
+                    }
+                },
+                1
+            );
 
-        // Publish messages for all devices
-        foreach ($allDevices as $device) {
-            MQTT::publish("zigbee2mqtt/$device/get", '{"state":""}');
+            // Publish messages for all devices
+            foreach ($allDevices as $device) {
+                MQTT::publish("zigbee2mqtt/$device/get", '{"state":""}');
+            }
+
+            $mqtt->loop(false, true);
+
+            $this->app->instance('lightingSubscribeMessage', $lightingSubscribeMessage);
+        } catch (MqttClientException $e) {
+            echo " lightingSubscribeMessage: " . $e->getMessage();
         }
-
-        $mqtt->loop(false, true);
-
-        $this->app->instance('lightingSubscribeMessage', $lightingSubscribeMessage);
     }
 
     public function lightingPublishToggle(string $topic): void
     {
-        MQTT::publish("zigbee2mqtt/$topic/set", '{"state": "TOGGLE"}');
+        try {
+            MQTT::publish("zigbee2mqtt/$topic/set", '{"state": "TOGGLE"}');
+        } catch (MqttClientException $e) {
+            echo " lightingPublishToggle: " . $e->getMessage();
+        }
     }
 }
