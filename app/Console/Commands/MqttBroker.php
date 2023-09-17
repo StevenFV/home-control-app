@@ -21,12 +21,14 @@ class MqttBroker extends Command
      */
     protected $description = 'MQTT broker publish subscribe tests';
     protected array $allLightsGroup = [
-        'LIGHT_ENTRANCE_01',
-        'LIGHT_ENTRANCE_02',
-        'LIGHT_FRONT_PATIO',
-        'LIGHT_BACK_PATIO_01',
-        'LIGHT_BACK_PATIO_02',
-        'LIGHT_GARAGE_SIDE'
+        'lgt/ho/outd/pat_nth',
+        'lgt/ho/ind/grfl/ent_nth',
+        'lgt/ho/ind/grfl/ent_wst',
+        'lgt/ho/outd/pat_sth_01',
+        'lgt/ho/outd/pat_sth_02',
+        'lgt/ho/outd/gar_sth',
+        'lgt/shd/outd/fld_wst',
+//        'ht/ga/ind/bsbd_elc'
     ];
     protected array $allLightsQuestion = [
         'ALL_LIGHTS_ON',
