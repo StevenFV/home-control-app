@@ -36,13 +36,14 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::group(['middleware' => ['permission:read']], function () {
+// todosfv modify permission for this section (actually not work for new User registration) and update ProfileTest.php Pest test
+//    Route::group(['middleware' => ['permission:read']], function () {
         Route::get('/dashboard', function () {
             return Inertia::render('Dashboard');
         })->name('dashboard');
-    });
+//    });
 
-    Route::group(['middleware' => ['permission:edit']], function () {
+    Route::group(['middleware' => ['permission:super admin', 'permission:super admin', 'permission:user']], function () {
         Route::get('/lighting', [LightingController::class, 'index'])->name('lighting.index');
         Route::post('/lighting/set', [LightingController::class, 'setPublishTopicMessage'])->name('lighting.set');
     });

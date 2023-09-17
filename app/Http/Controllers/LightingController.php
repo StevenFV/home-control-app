@@ -13,14 +13,15 @@ class LightingController extends Controller
     {
         // todosfv controllers __construct to test
         $this->middleware('auth');
-        $this->middleware(
-            'permission:read',
-            ['only' => ['data']]
-        );
-        $this->middleware(
-            'permission:edit',
-            ['only' => ['index']]
-        );
+        // todosfv configure permissions
+//        $this->middleware(
+//            'permission:admin',
+//            ['only' => ['data']]
+//        );
+//        $this->middleware(
+//            'permission:user',
+//            ['only' => ['index']]
+//        );
     }
 
     public function index()
