@@ -20,15 +20,16 @@ class MqttBroker extends Command
      * @var string
      */
     protected $description = 'MQTT broker publish subscribe tests';
+    // todosfv find a way for not hardcoded friendly name but get from zigbee2mqtt message
     protected array $allLightsGroup = [
-        'lgt/ho/outd/pat_nth',
-        'lgt/ho/ind/grfl/ent_nth',
-        'lgt/ho/ind/grfl/ent_wst',
-        'lgt/ho/outd/pat_sth_01',
-        'lgt/ho/outd/pat_sth_02',
-        'lgt/ho/outd/gar_sth',
+        'lgt_ho_outd_pat_nth',
+        'lgt_ho_ind_grfl_ent_nth',
+        'lgt_ho_ind_grfl_ent_wst',
+        'lgt_ho_outd_pat_sth_01',
+        'lgt_ho_outd_pat_sth_02',
+        'lgt_ho_outd_gar_sth',
         'lgt/shd/outd/fld_wst',
-//        'ht/ga/ind/bsbd_elc'
+        'ht_ga_ind_bsbd_elc'
     ];
     protected array $allLightsQuestion = [
         'ALL_LIGHTS_ON',
@@ -66,6 +67,7 @@ class MqttBroker extends Command
     /**
      * Execute the console command.
      */
+    // todosfv update handle for use not only with lighting but with other devices too
     public function handle(): void
     {
         $request = $this->choice(
