@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Providers\MqttServiceProvider;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
-class LightingController extends Controller
+class LightingController extends MqttController
 {
-    public function __construct()
-    {
-        // todosfv controllers __construct to test
-        $this->middleware('auth');
-        // todosfv configure permissions
+	const LIGHTING_TOPIC_FILTER = 'light';
+
+	public function __construct()
+	{
+		// todosfv controllers __construct to test
+		$this->middleware('auth');
+		// todosfv configure permissions
 //        $this->middleware(
 //            'permission:admin',
 //            ['only' => ['data']]
@@ -22,32 +22,36 @@ class LightingController extends Controller
 //            'permission:user',
 //            ['only' => ['index']]
 //        );
-    }
+	}
 
-    public function index()
-    {
-        $subscribeTopicMessage = $this->getSubscribeTopicMessage();
+	public function index(): Response
+	{
+		return Inertia::render('Lighting/index', [
+			'subscribeTopicMessage' => $this->fetchLightingTopicMessage()
+		]);
+	}
 
-        return Inertia::render('Lighting/index', [
-            'subscribeTopicMessage' => $subscribeTopicMessage
-        ]);
-    }
+	private function fetchLightingTopicMessage(): array
+	{
+		$lightingFriendlyNames = $this->fetchLightingFriendlyNames();
+		$lightingTopicsMessages = [];
 
-    public function getSubscribeTopicMessage(): array
-    {
-        (object)$lightingSubscribeMessage = app('lightingSubscribeMessage');
+		foreach ($lightingFriendlyNames as $lightingFriendlyName) {
+			$lightingTopicsMessages[] = $this->fetchSubscribeTopicMessage($lightingFriendlyName);
+		}
 
-        return [
-            'lightingSubscribeMessage' => $lightingSubscribeMessage
-        ];
-    }
+		return $lightingTopicsMessages;
+	}
 
-    public function setPublishTopicMessage(Request $request): JsonResponse
-    {
-        $changedItemTopic = $request->input('changedItem.topic');
+	private function fetchLightingFriendlyNames(): array
+	{
+		return $this->fetchFriendlyNames()->filter(function ($name) {
+			return str_starts_with($name, self::LIGHTING_TOPIC_FILTER);
+		})->toArray();
+	}
 
-        app(MqttServiceProvider::class)->lightingPublishToggle($changedItemTopic);
-
-        return response()->json(['message' => 'Request received successfully']);
-    }
+	private function publishLightingToggle(string $friendlyName): void
+	{
+		$this->publishMessage($this->createSetTopic($friendlyName), $this->createStateJson(MqttController::TOGGLE));
+	}
 }

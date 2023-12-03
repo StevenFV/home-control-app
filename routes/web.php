@@ -45,7 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::group(['middleware' => ['permission:control lighting']], function () {
         Route::get('/lighting', [LightingController::class, 'index'])->name('lighting.index');
-        Route::post('/lighting/set', [LightingController::class, 'setPublishTopicMessage'])->name('lighting.set');
+        Route::post('/lighting/set', [LightingController::class, 'publishLightingToggle'])->name('lighting.set');
     });
 // todosfv add permission for this section and update ProfileTest.php Pest test
 //    Route::group(['middleware' => ['role:admin']], function () {

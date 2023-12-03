@@ -22,14 +22,14 @@ class MqttBroker extends Command
     protected $description = 'MQTT broker publish subscribe tests';
     // todosfv find a way for not hardcoded friendly name but get from zigbee2mqtt message
     protected array $allLightsGroup = [
-        'lgt_ho_outd_pat_nth',
-        'lgt_ho_ind_grfl_ent_nth',
-        'lgt_ho_ind_grfl_ent_wst',
-        'lgt_ho_outd_pat_sth_01',
-        'lgt_ho_outd_pat_sth_02',
-        'lgt_ho_outd_gar_sth',
-        'lgt/shd/outd/fld_wst',
-        'ht_ga_ind_bsbd_elc'
+        'light/home/outside/front_patio/recessed_light',
+        'light/home/indoor/ground_floor/entrance_west/ceiling_light',
+        'light/home/indoor/ground_floor/entrance_north/ceiling_light',
+        'light/home/outside/back_patio/wall_light',
+        'light/garage/outside/side/wall_light',
+        'light/home/outside/back_patio/recessed_light',
+        'light/shed/outside/side/wall_light',
+        'heat/garage/indoor/electric_baseboard'
     ];
     protected array $allLightsQuestion = [
         'ALL_LIGHTS_ON',
