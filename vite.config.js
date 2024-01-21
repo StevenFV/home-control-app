@@ -36,6 +36,10 @@ export default ({mode}) =>
                 // Browser will utilise this port, use for redirect the connection to the good Docker container (to npm who listen on the port)
                 clientPort: process.env.VITE_HMR_CLIENT_PORT,
             },
+            watch: {
+                // See this link for more information - https://vitejs.dev/config/server-options.html#server-watch
+                usePolling: true,
+            }
         },
     });
 }
