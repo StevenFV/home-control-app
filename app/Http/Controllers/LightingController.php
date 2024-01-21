@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -26,7 +27,7 @@ class LightingController extends MqttController
 
 	public function index(): Response
 	{
-		return Inertia::render('Lighting/index', [
+		return Inertia::render('Lighting/Index', [
 			'subscribeTopicMessage' => $this->fetchLightingTopicMessage()
 		]);
 	}
@@ -50,8 +51,9 @@ class LightingController extends MqttController
 		})->toArray();
 	}
 
-	private function publishLightingToggle(string $friendlyName): void
+	public function publishLightingToggle(Request $request): void
 	{
-		$this->publishMessage($this->createSetTopic($friendlyName), $this->createStateJson(MqttController::TOGGLE));
+		$topic = $request['topic'];
+		$this->publishMessage($this->createSetTopic($topic), $this->createStateJson(MqttController::TOGGLE));
 	}
 }

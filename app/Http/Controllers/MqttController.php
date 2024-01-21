@@ -17,9 +17,9 @@ class MqttController extends Controller
 	private const READ_VALUES_FROM_DEVICE = '/get';
 	private const STATE_DEVICE_PAYLOAD = '{"state": ""}';
 
-	protected function createSetTopic(string $friendlyName): string
+	protected function createSetTopic(string $topic): string
 	{
-		return self::BASE_TOPIC . $friendlyName . self::PUBLISH_MESSAGE_TO_DEVICE;
+		return $topic . self::PUBLISH_MESSAGE_TO_DEVICE;
 	}
 
 	protected function createStateJson(string $state): bool|string
@@ -50,7 +50,7 @@ class MqttController extends Controller
 
 			return $friendlyNames;
 		} catch (MqttClientException $e) {
-			return ['error' => $e->getMessage()];
+			return ['error' => $e->getMessage()]; // todosfv
 		}
 	}
 
@@ -63,7 +63,7 @@ class MqttController extends Controller
 				function (string $topic, string $message) use ($mqtt, &$callback) {
 					$callback = [
 						'topic' => $topic,
-						'message' => $message
+						'message' => json_decode($message)
 					];
 					$mqtt->interrupt();
 				},
