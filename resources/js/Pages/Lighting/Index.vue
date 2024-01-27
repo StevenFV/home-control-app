@@ -18,8 +18,6 @@ const props = defineProps({
     }
 })
 
-const data = props.subscribeTopicMessage;
-
 const transText = (strKey, varKey = null) => {
   return varKey ? trans(`${strKey}.${varKey}`).toUpperCase() : trans(`${strKey}`).toUpperCase();
 }
@@ -29,11 +27,16 @@ const displayText = (strKey, varKey = null, value = null) => {
 }
 
 const state = reactive({});
+const data = reactive(props.subscribeTopicMessage);
 
-for (const index of data) {
-  const topic = index?.topic;
-  state[topic] = index?.message?.state === 'ON';
+const updateLightingState = () => {
+  for (const index of data) {
+    const topic = index?.topic;
+    state[topic] = index?.message?.state === 'ON';
+  }
 }
+
+updateLightingState();
 
 const lightingStates = computed(() => {
     return Object.keys(state).map(topic => ({
@@ -68,19 +71,26 @@ watch(
         <template #header>
             <div class="grid grid-cols-3 gap-6">
                 <div
-                    v-for="(item, index) in subscribeTopicMessage"
-                    :key="index"
+                    v-for="(item, indexItem) in subscribeTopicMessage"
+                    :key="indexItem"
                     class="bg-yellow-100 shadow-lg rounded-lg overflow-hidden m-6 col-3"
                 >
                     <div class="text-center pt-2 font-semibold text-xl text-gray-800 leading-tight">
                         {{ displayText(TOPIC_TITLE, item.topic) }}
                     </div>
-                    <div v-for="(value, label) in item.message" class="p-1">
+                    <div
+                        v-for="(value, label, indexValue) in item.message"
+                        :key="indexValue"
+                        class="p-1"
+                    >
                         <template v-if="label">
-                          {{ displayText(MESSAGE_LABEL, label, value) }}
+                            {{ displayText(MESSAGE_LABEL, label, value) }}
                         </template>
                     </div>
-                  <InputSwitch v-model="state[item.topic]" class="ml-1"/>
+                    <InputSwitch
+                        v-model="state[item.topic]"
+                        class="ml-1"
+                    />
                 </div>
             </div>
         </template>

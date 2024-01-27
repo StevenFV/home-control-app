@@ -33,7 +33,8 @@ export default ({mode}) =>
                 // Should match the domain name for avoid "Cross-Origin Request Blocked"
                 host: process.env.VITE_HMR_HOST,
 
-                // Browser will utilise this port, use for redirect the connection to the good Docker container (to npm who listen on the port)
+                // Browser will utilize this port, use for redirect the connection to the good Docker container
+                // (to npm who listens to on the port)
                 clientPort: process.env.VITE_HMR_CLIENT_PORT,
             },
             watch: {
