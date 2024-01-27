@@ -36,7 +36,8 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-// todosfv modify permission for this section (actually not work for new User registration) and update ProfileTest.php Pest test
+// todosfv modify permission for this section (actually not work for new User registration)
+// todosfv and update ProfileTest.php Pest test
 //    Route::group(['middleware' => ['permission:read']], function () {
         Route::get('/dashboard', function () {
             return Inertia::render('Dashboard');
