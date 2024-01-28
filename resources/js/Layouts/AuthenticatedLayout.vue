@@ -4,6 +4,8 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
+import PermissionName from "@/Enums/PermissionName";
+import PermissionRole from "@/Enums/PermissionRole";
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import {Link} from '@inertiajs/vue3';
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
@@ -41,7 +43,7 @@ const showingNavigationDropdown = ref(false);
                                     {{ trans('dashboard.dashboard') }}
                                 </NavLink>
                                 <NavLink
-                                    v-if="hasPermission('control lighting')"
+                                    v-if="hasRole(PermissionRole.ADMIN) || (hasPermission(PermissionName.VIEW_LIGHTING) || hasPermission(PermissionName.CONTROL_LIGHTING))"
                                     :href="route('lighting.index')"
                                     :active="route().current('lighting')"
                                 >
@@ -82,10 +84,7 @@ const showingNavigationDropdown = ref(false);
                                     </template>
 
                                     <template #content>
-                                        <DropdownLink
-                                            v-if="hasRole('admin')"
-                                            :href="route('profile.edit')"
-                                        >
+                                        <DropdownLink :href="route('profile.edit')">
                                             {{ trans('app.profile') }}
                                         </DropdownLink>
                                         <DropdownLink

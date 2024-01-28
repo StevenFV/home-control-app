@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PermissionName;
+use App\Enums\PermissionRole;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -12,17 +14,24 @@ class LightingController extends MqttController
 
     public function __construct()
     {
-        // todosfv controllers __construct to test
-        $this->middleware('auth');
-        // todosfv configure permissions
-//        $this->middleware(
-//            'permission:admin',
-//            ['only' => ['data']]
-//        );
-//        $this->middleware(
-//            'permission:user',
-//            ['only' => ['index']]
-//        );
+        $this->middleware(function ($request, $next) {
+            if (
+                $request->user()->can(PermissionRole::ADMIN->value) ||
+                $request->user()->can(PermissionName::CONTROL_LIGHTING->value)
+            ) {
+                return $next($request);
+            }
+
+            if (
+                $request->user()->can(PermissionName::VIEW_LIGHTING->value) && optional(
+                    $request->route()
+                )->getActionMethod() !== 'index'
+            ) {
+                abort(403, 'Unauthorized action.');
+            }
+
+            return $next($request);
+        });
     }
 
     public function index(): Response

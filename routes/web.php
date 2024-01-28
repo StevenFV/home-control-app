@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\PermissionName;
+use App\Enums\PermissionRole;
 use App\Http\Controllers\LightingController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -36,24 +38,24 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-// todosfv modify permission for this section (actually not work for new User registration)
-// todosfv and update ProfileTest.php Pest test
-//    Route::group(['middleware' => ['permission:read']], function () {
-        Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard');
-        })->name('dashboard');
-//    });
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
 
-    Route::group(['middleware' => ['permission:control lighting']], function () {
-        Route::get('/lighting', [LightingController::class, 'index'])->name('lighting.index');
-        Route::post('/lighting/set', [LightingController::class, 'publishLightingToggle'])->name('lighting.set');
-    });
-// todosfv add permission for this section and update ProfileTest.php Pest test
-//    Route::group(['middleware' => ['role:admin']], function () {
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-//    });
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::group(
+        ['middleware' => ['role_or_permission:' .
+            PermissionRole::ADMIN->value . '|' .
+            PermissionName::VIEW_LIGHTING->value . '|' .
+            PermissionName::CONTROL_LIGHTING->value]],
+        function () {
+            Route::get('/lighting', [LightingController::class, 'index'])->name('lighting.index');
+            Route::post('/lighting/set', [LightingController::class, 'publishLightingToggle'])->name('lighting.set');
+        }
+    );
 });
 
 require __DIR__ . '/auth.php';
