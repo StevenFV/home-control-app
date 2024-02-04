@@ -1,5 +1,6 @@
 <?php
 
+use App\Abstracts\AbstractDeviceMessenger;
 use App\Enums\PermissionName;
 use App\Enums\PermissionRole;
 use App\Http\Controllers\LightingController;
@@ -53,7 +54,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             PermissionName::CONTROL_LIGHTING->value]],
         function () {
             Route::get('/lighting', [LightingController::class, 'index'])->name('lighting.index');
-            Route::post('/lighting/set', [LightingController::class, 'publishLightingToggle'])->name('lighting.set');
+            Route::post('/lighting/set', [AbstractDeviceMessenger::class, 'publishDeviceToggle'])->name('lighting.set');
         }
     );
 });

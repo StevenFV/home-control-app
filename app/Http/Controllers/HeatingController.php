@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-class HeatingController extends MqttController
+use App\Abstracts\AbstractDeviceMessenger;
+
+class HeatingController extends AbstractDeviceMessenger
 {
     //
 }
