@@ -3,7 +3,6 @@
 namespace App\Abstracts;
 
 use App\Enums\Zigbee2MqttUtility;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Session;
@@ -11,7 +10,7 @@ use PhpMqtt\Client\Contracts\MqttClient;
 use PhpMqtt\Client\Exceptions\MqttClientException;
 use PhpMqtt\Client\Facades\MQTT;
 
-class AbstractDeviceMessenger extends controller
+class AbstractDeviceMessenger
 {
     private MqttClient $mqtt;
 
