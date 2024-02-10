@@ -33,9 +33,9 @@ export default ({mode}) =>
                 // Should match the domain name for avoid "Cross-Origin Request Blocked"
                 host: process.env.VITE_HMR_HOST,
 
-                // Browser will utilize this port, use for redirect the connection to the good Docker container
-                // (to npm who listens to on the port)
-                clientPort: process.env.VITE_HMR_CLIENT_PORT,
+                // Browser will utilize this port, use for redirect the connection to the good Docker container,
+                // when docker is used (to npm who listens to on the port)
+                //clientPort: process.env.VITE_HMR_CLIENT_PORT,
             },
             watch: {
                 // See this link for more information - https://vitejs.dev/config/server-options.html#server-watch
