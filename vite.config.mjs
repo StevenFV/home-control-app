@@ -11,7 +11,6 @@ export default ({mode}) =>
         plugins: [
             laravel({
                 input: 'resources/js/app.js',
-                detectTls: process.env.VITE_HOST,
                 refresh: true
             }),
             vue({
@@ -25,10 +24,6 @@ export default ({mode}) =>
             i18n(),
         ],
         server: {
-            https: {
-                key: process.env.VITE_HTTPS_KEY,
-                cert: process.env.VITE_HTTPS_CERT
-            },
             host: process.env.VITE_HOST,
             hmr: {
                 host: process.env.VITE_HOST,
