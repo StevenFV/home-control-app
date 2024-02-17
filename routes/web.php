@@ -1,9 +1,9 @@
 <?php
 
-use App\Abstracts\AbstractDeviceMessenger;
+use App\Abstracts\Devices\AbstractDeviceMessenger;
 use App\Enums\PermissionName;
 use App\Enums\PermissionRole;
-use App\Http\Controllers\LightingController;
+use App\Http\Controllers\Devices\LightingController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -53,8 +53,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             PermissionName::VIEW_LIGHTING->value . '|' .
             PermissionName::CONTROL_LIGHTING->value]],
         function () {
-            Route::get('/lighting', [LightingController::class, 'index'])->name('lighting.index');
-            Route::post('/lighting/set', [AbstractDeviceMessenger::class, 'publishDeviceToggle'])->name('lighting.set');
+            Route::get('devices/lighting', [LightingController::class, 'index'])->name('lighting.index');
+            Route::post('devices/lighting/set', [AbstractDeviceMessenger::class, 'publishDeviceToggle'])->name(
+                'lighting.set'
+            );
         }
     );
 });

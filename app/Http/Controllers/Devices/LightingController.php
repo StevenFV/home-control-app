@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Devices;
 
-use App\Abstracts\AbstractDeviceMessenger;
+use App\Abstracts\Devices\AbstractDeviceMessenger;
 use App\DevicePolicy;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class HeatingController extends AbstractDeviceMessenger
+class LightingController extends AbstractDeviceMessenger
 {
     public function __construct()
     {
@@ -19,10 +19,7 @@ class HeatingController extends AbstractDeviceMessenger
 
     public function index(): Response
     {
-        // todosfv ajuste AbstractDeviceMessenger to can be
-        // todosfv implement from all devices class without change
-
-        return Inertia::render('Heating/Index', [
+        return Inertia::render('Lighting/Index', [
             'subscribeTopicMessage' => $this->fetchDeviceTopicMessage()
         ]);
     }

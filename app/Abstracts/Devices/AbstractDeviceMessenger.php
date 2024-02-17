@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Abstracts;
+namespace App\Abstracts\Devices;
 
 use App\Enums\Zigbee2MqttUtility;
 use Illuminate\Http\Request;
