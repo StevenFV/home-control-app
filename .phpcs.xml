@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<ruleset name="MyStandard">
+    <description>My Custom Coding Standard</description>
+
+    <arg name="report" value="full"/>
+
+    <file>./app</file>
+    <file>./routes</file>
+    <file>./database</file>
+    <file>./lang</file>
+    <exclude-pattern>*.js</exclude-pattern>
+
+    <rule ref="PSR12"/>
+
+    <rule ref="Generic.PHP.ForbiddenFunctions">
+        <properties>
+            <property name="forbiddenFunctions" type="array">
+                <element key="echo" value="null"/>
+                <element key="print" value="null"/>
+                <element key="dump" value="null"/>
+                <element key="dd" value="null"/>
+                <element key="var_dump" value="null"/>
+                <element key="create_function" value="null"/>
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="Generic.Metrics.NestingLevel">
+        <properties>
+            <property name="nestingLevel" value="8"/>
+            <property name="absoluteNestingLevel" value="12"/>
+        </properties>
+    </rule>
+
+    <rule ref="Generic.Strings.UnnecessaryStringConcat">
+        <properties>
+            <property name="allowMultiline" value="true"/>
+        </properties>
+    </rule>
+
+    <rule ref="Generic.Files.LineLength">
+        <exclude-pattern>./lang/*</exclude-pattern>
+    </rule>
+</ruleset>

@@ -1,0 +1,28 @@
+body,
+body *:not(html):not(style):not(br):not(tr):not(code) {
+    font-family: Roboto, Helvetica, Arial, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+}
+
+.p-button {
+    border-radius: 24px !important;
+}
+
+.p-calendar .p-button {
+    border-radius: inherit !important;
+}
+
+.p-panel-header {
+    background: theme('colors.primary') !important;
+}
+
+.p-panel-title {
+    color: white !important;
+    font-size: 1.5rem;
+    font-weight: normal !important;
+}
+
+.p-panel .p-panel-header, .p-panel .p-panel-content {
+    border: 2px solid theme('colors.primary') !important;
+    border-radius: 0 !important;
+}
