@@ -11,8 +11,6 @@ class HeatingController extends AbstractDeviceMessenger
 {
     public function __construct()
     {
-        parent::__construct();
-
         $devicePolicy = new DevicePolicy();
         $devicePolicy->check();
     }
@@ -23,7 +21,7 @@ class HeatingController extends AbstractDeviceMessenger
         // todosfv implement from all devices class without change
 
         return Inertia::render('Heating/Index', [
-            'subscribeTopicMessage' => $this->fetchDeviceTopicMessage()
+            'subscribeTopicMessage' => $this->getTopicMessage()
         ]);
     }
 }
