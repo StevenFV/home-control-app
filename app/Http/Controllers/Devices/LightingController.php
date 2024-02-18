@@ -11,8 +11,6 @@ class LightingController extends AbstractDeviceMessenger
 {
     public function __construct()
     {
-        parent::__construct();
-
         $devicePolicy = new DevicePolicy();
         $devicePolicy->check();
     }
@@ -20,7 +18,7 @@ class LightingController extends AbstractDeviceMessenger
     public function index(): Response
     {
         return Inertia::render('Lighting/Index', [
-            'subscribeTopicMessage' => $this->fetchDeviceTopicMessage()
+            'subscribeTopicMessage' => $this->getTopicMessage()
         ]);
     }
 }

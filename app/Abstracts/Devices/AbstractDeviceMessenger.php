@@ -3,111 +3,90 @@
 namespace App\Abstracts\Devices;
 
 use App\Enums\Zigbee2MqttUtility;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Session;
-use PhpMqtt\Client\Contracts\MqttClient;
-use PhpMqtt\Client\Exceptions\MqttClientException;
+use PhpMqtt\Client\Exceptions\DataTransferException;
+use PhpMqtt\Client\Exceptions\RepositoryException;
 use PhpMqtt\Client\Facades\MQTT;
 
 class AbstractDeviceMessenger
 {
-    private MqttClient $mqtt;
-
-    public function __construct()
+    protected function getTopicMessage(): array
     {
-        $this->mqtt = MQTT::connection('default');
-    }
+        $deviceFriendlyNames = $this->getFriendlyNames();
+        $deviceTopicsMessages = [];
 
-    protected function fetchDeviceTopicMessage(): array
-    {
-        $lightingFriendlyNames = $this->fetchDeviceFriendlyNames();
-        $lightingTopicsMessages = [];
-
-        foreach ($lightingFriendlyNames as $lightingFriendlyName) {
-            $lightingTopicsMessages[] = $this->fetchSubscribeTopicMessage($lightingFriendlyName);
+        foreach ($deviceFriendlyNames as $deviceFriendlyName) {
+            $deviceTopicsMessages[] = $this->getSubscribeTopicMessage($deviceFriendlyName);
         }
 
-        return $lightingTopicsMessages;
+        return $deviceTopicsMessages;
     }
 
-    private function fetchDeviceFriendlyNames(): array
+    private function getFriendlyNames(): array
     {
-        return $this->fetchFriendlyNames()->filter(function ($name) {
+        return $this->getMqttBridgeFriendlyNames()->filter(function ($name) {
             return str_starts_with($name, Zigbee2MqttUtility::LIGHTING_TOPIC_FILTER->value);
         })->toArray();
     }
 
-    private function fetchSubscribeTopicMessage(string $friendlyName): array
+    private function getSubscribeTopicMessage(string $friendlyName): array
     {
         try {
-            $this->mqtt->subscribe(
+            MQTT::connection()->subscribe(
                 Zigbee2MqttUtility::BASE_TOPIC->value . $friendlyName,
                 function (string $topic, string $message) use (&$callback) {
                     $callback = [
                         'topic' => $topic,
                         'message' => json_decode($message)
                     ];
-                    $this->mqtt->interrupt();
+                    MQTT::connection()->interrupt();
                 },
                 0
             );
-            $this->mqtt->publish(
+            MQTT::publish(
                 Zigbee2MqttUtility::BASE_TOPIC->value . $friendlyName . Zigbee2MqttUtility::GET->value,
                 Zigbee2MqttUtility::STATE_DEVICE_PAYLOAD->value
             );
-            $this->mqtt->loop();
+            MQTT::connection()->loop();
 
             return $callback;
-        } catch (MqttClientException $e) {
+        } catch (DataTransferException | RepositoryException | Exception $e) {
             return ['error' => $e->getMessage()];
         }
     }
 
-    private function fetchFriendlyNames(): Collection
+    private function getMqttBridgeFriendlyNames(): Collection|array
     {
         try {
-            $this->mqtt->subscribe(
+            MQTT::connection()->subscribe(
                 Zigbee2MqttUtility::ZIGBEE2MQTT_BRIDGE_DEVICES->value,
                 function (string $topic, string $message) use (&$friendlyNames) {
                     $deviceSubscribe = json_decode($message);
                     $friendlyNames = collect($deviceSubscribe)->pluck('friendly_name')->except([0]);
 
-                    $this->mqtt->interrupt();
+                    MQTT::connection()->interrupt();
                 },
                 1
             );
-            $this->mqtt->loop(false, true);
+            MQTT::connection()->loop(false, true);
 
             return $friendlyNames;
-        } catch (MqttClientException $e) {
-            return ['error' => $e->getMessage()]; // todosfv and test all error return
+        } catch (DataTransferException | RepositoryException | Exception $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 
-    public function publishDeviceToggle(Request $request): void
-    {
-        $topic = $request['topic'];
-        $this->publishMessage($this->createSetTopic($topic), $this->createStateJson(Zigbee2MqttUtility::TOGGLE->value));
-    }
+    public function publishMessage(
+        Request $request,
+        $command = Zigbee2MqttUtility::SET->value,
+        $state = Zigbee2MqttUtility::TOGGLE->value
+    ): void {
+        $topicWithCommand = $request['topic'] . $command;
+        $messageState = json_encode(['state' => $state]);
 
-    private function publishMessage(string $topic, string $message): void
-    {
-        try {
-            $this->mqtt->publish($topic, $message);
-            $this->mqtt->disconnect();
-        } catch (MqttClientException $e) {
-            Session::flash('error', $e->getMessage());
-        }
-    }
-
-    private function createSetTopic(string $topic): string
-    {
-        return $topic . Zigbee2MqttUtility::SET->value;
-    }
-
-    private function createStateJson(string $state): bool|string
-    {
-        return json_encode(['state' => $state]);
+        MQTT::publish($topicWithCommand, $messageState);
+        MQTT::disconnect();
     }
 }
