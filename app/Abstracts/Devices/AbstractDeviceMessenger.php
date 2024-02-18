@@ -52,7 +52,7 @@ class AbstractDeviceMessenger
             MQTT::connection()->loop();
 
             return $callback;
-        } catch (DataTransferException|RepositoryException|Exception $e) {
+        } catch (DataTransferException | RepositoryException | Exception $e) {
             return ['error' => $e->getMessage()];
         }
     }
@@ -73,7 +73,7 @@ class AbstractDeviceMessenger
             MQTT::connection()->loop(false, true);
 
             return $friendlyNames;
-        } catch (DataTransferException|RepositoryException|Exception $e) {
+        } catch (DataTransferException | RepositoryException | Exception $e) {
             return ['error' => $e->getMessage()];
         }
     }
