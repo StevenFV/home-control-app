@@ -3,10 +3,11 @@
 namespace App\Abstracts\Devices;
 
 use App\Enums\Zigbee2MqttUtility;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use PhpMqtt\Client\Exceptions\DataTransferException;
-use PhpMqtt\Client\Exceptions\MqttClientException;
+use PhpMqtt\Client\Exceptions\RepositoryException;
 use PhpMqtt\Client\Facades\MQTT;
 
 class AbstractDeviceMessenger
@@ -51,12 +52,12 @@ class AbstractDeviceMessenger
             MQTT::connection()->loop();
 
             return $callback;
-        } catch (MqttClientException $e) {
+        } catch (DataTransferException|RepositoryException|Exception $e) {
             return ['error' => $e->getMessage()];
         }
     }
 
-    private function getMqttBridgeFriendlyNames(): Collection
+    private function getMqttBridgeFriendlyNames(): Collection|array
     {
         try {
             MQTT::connection()->subscribe(
@@ -72,8 +73,8 @@ class AbstractDeviceMessenger
             MQTT::connection()->loop(false, true);
 
             return $friendlyNames;
-        } catch (DataTransferException $e) {
-            return ['error' => $e->getMessage()]; // todosfv and test all error return
+        } catch (DataTransferException|RepositoryException|Exception $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 
