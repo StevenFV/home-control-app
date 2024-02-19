@@ -1,10 +1,11 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import InputSwitch from 'primevue/inputswitch';
 import axios from 'axios';
-import {Head} from "@inertiajs/vue3";
 import {computed, reactive, watch} from 'vue';
+import {Head} from "@inertiajs/vue3";
+import InputSwitch from 'primevue/inputswitch';
 import {trans} from "laravel-vue-i18n";
+import Zigbee2MqttUtility from "@/Enums/Devices/Zigbee2MqttUtility";
 
 
 const INDEX = 'lighting.index';
@@ -45,23 +46,26 @@ const lightingStates = computed(() => {
     }));
 });
 
-watch(
-    lightingStates,
-    async (newStates, oldStates) => {
-        const changedKey = Object.keys(newStates).find(key => newStates[key]?.state !== oldStates[key]?.state);
+watch(lightingStates, (newStates, oldStates) => {
+    const changedKey = Object.keys(newStates).find(key => newStates[key]?.state !== oldStates[key]?.state);
 
-        if (changedKey) {
-            const changedItem = newStates[changedKey];
-
-            try {
-                await axios.post(route('lighting.set'), changedItem);
-            } catch (error) {
-                console.error(error);
-            }
-        }
-    },
-    {deep: true}
+    if (changedKey) {
+      toggleLight(newStates, changedKey)
+    }
+  }, {deep: true}
 );
+
+const toggleLight = async (newStates, changedKey) => {
+  const changedItem = newStates[changedKey];
+  changedItem[Zigbee2MqttUtility.KEY_SET] = Zigbee2MqttUtility.TOPIC_SET;
+  changedItem[Zigbee2MqttUtility.KEY_COMMAND_TOGGLE] = Zigbee2MqttUtility.COMMAND_TOGGLE;
+
+  try {
+    await axios.post(route('lighting.set'), changedItem);
+  } catch (error) {
+    console.error(error);
+  }
+}
 </script>
 
 <template>

@@ -54,7 +54,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             PermissionName::CONTROL_LIGHTING->value]],
         function () {
             Route::get('devices/lighting', [LightingController::class, 'index'])->name('lighting.index');
-            Route::post('devices/lighting/set', [AbstractDeviceMessenger::class, 'publishMessage'])->name(
+            Route::post('devices/lighting/set', [LightingController::class, 'toggleLight'])->name(
                 'lighting.set'
             );
         }

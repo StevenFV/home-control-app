@@ -4,7 +4,6 @@ namespace App\Abstracts\Devices;
 
 use App\Enums\Zigbee2MqttUtility;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use PhpMqtt\Client\Exceptions\DataTransferException;
 use PhpMqtt\Client\Exceptions\RepositoryException;
@@ -78,15 +77,9 @@ class AbstractDeviceMessenger
         }
     }
 
-    public function publishMessage(
-        Request $request,
-        $command = Zigbee2MqttUtility::SET->value,
-        $state = Zigbee2MqttUtility::TOGGLE->value
-    ): void {
-        $topicWithCommand = $request['topic'] . $command;
-        $messageState = json_encode(['state' => $state]);
-
-        MQTT::publish($topicWithCommand, $messageState);
+    protected function publishMessage($topic, $message): void
+    {
+        MQTT::publish($topic, $message);
         MQTT::disconnect();
     }
 }
