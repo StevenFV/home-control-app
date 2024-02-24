@@ -50,7 +50,9 @@ Before you begin, make sure you have the following prerequisites installed on yo
 
 ## Conclusion
 
-Congratulations! You have successfully completed the installation steps for your project. Make sure to verify that your project is running correctly by following any additional project-specific instructions.
+Congratulations! You have successfully completed the installation steps for your project.
+
+See (Home-Control-Data)[https://github.com/StevenFV/home-control-data] project for configure the necessary backend server for the services.
 
 If you encounter any issues during the installation process or have further questions, please refer to the project documentation or seek assistance from the project maintainers.
 
