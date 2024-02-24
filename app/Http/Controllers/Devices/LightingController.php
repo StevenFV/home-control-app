@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Devices;
 
 use App\Abstracts\Devices\AbstractDeviceMessenger;
 use App\DevicePolicy;
-use Illuminate\Http\Request;
+use App\Http\Requests\Devices\LightingRequest;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -23,7 +23,7 @@ class LightingController extends AbstractDeviceMessenger
         ]);
     }
 
-    public function toggleLight(Request $request): void
+    public function toggleLight(LightingRequest $request): void
     {
         $topic = $request['topic'] . $request['set'];
         $message = json_encode(['state' => $request['toggle']]);
