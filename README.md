@@ -8,9 +8,9 @@ Before you begin, make sure you have the following prerequisites installed on yo
 
 - [Git](https://git-scm.com/) - Version control system
 - [Docker](https://www.docker.com/) - Containerization platform, with this setup environment:
-  - [Node.js](https://nodejs.org/) - JavaScript runtime environment
-  - [Composer](https://getcomposer.org/) - PHP dependency manager
-  - [npm](https://www.npmjs.com/) - Node.js package manager
+- [Node.js](https://nodejs.org/) - JavaScript runtime environment
+- [Composer](https://getcomposer.org/) - PHP dependency manager
+- [npm](https://www.npmjs.com/) - Node.js package manager
 
 ## Installation Steps
 
@@ -52,7 +52,7 @@ Before you begin, make sure you have the following prerequisites installed on yo
 
 Congratulations! You have successfully completed the installation steps for your project.
 
-See (Home-Control-Data)[https://github.com/StevenFV/home-control-data] project for configure the necessary backend server for the services.
+See [Home-Control-Data](https://github.com/StevenFV/home-control-data/) project for configure the necessary backend server for the services.
 
 If you encounter any issues during the installation process or have further questions, please refer to the project documentation or seek assistance from the project maintainers.
 
