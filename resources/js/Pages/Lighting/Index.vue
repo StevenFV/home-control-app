@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import axios from 'axios';
+import Button from 'primevue/button';
 import {computed, reactive, watch} from 'vue';
 import {Head} from "@inertiajs/vue3";
 import InputSwitch from 'primevue/inputswitch';
@@ -66,6 +67,14 @@ const toggleLight = async (newStates, changedKey) => {
     console.error(error);
   }
 }
+
+const storeIdentification = async () => {
+  try {
+    await axios.post(route('lighting.storeIdentifications'))
+  } catch (error){
+    console.error(error);
+  }
+}
 </script>
 
 <template>
@@ -73,6 +82,10 @@ const toggleLight = async (newStates, changedKey) => {
 
     <AuthenticatedLayout>
         <template #header>
+            <Button
+                label="Submit"
+                @click="storeIdentification"
+            />
             <div class="grid grid-cols-3 gap-6">
                 <div
                     v-for="(item, indexItem) in subscribeTopicMessage"
