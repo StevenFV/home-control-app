@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('Devices.lights', function (Blueprint $table) {
+        Schema::create('devices.lights', function (Blueprint $table) {
             $table->id();
-            $table->string('address', 16)->unique();
+            $table->string('ieee_address', 18)->unique();
             $table->string('friendly_name', 70)->unique();
             $table->integer('brightness')->nullable();
             $table->float('energy')->nullable();
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('Devices.lights');
+        Schema::dropIfExists('devices.lights');
     }
 };
