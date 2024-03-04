@@ -4,19 +4,15 @@ namespace App\Abstracts\Devices;
 
 use App\DevicePolicy;
 use App\Enums\Zigbee2MqttUtility;
-use App\Http\Requests\Devices\DeviceRequest;
 use App\Http\Requests\Devices\LightingRequest;
-use App\Models\Devices\Lighting;
 use Exception;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use PhpMqtt\Client\Exceptions\DataTransferException;
 use PhpMqtt\Client\Exceptions\RepositoryException;
 use PhpMqtt\Client\Facades\MQTT;
 
 class AbstractDeviceMessenger
 {
-    private string $message;
 
     public function __construct()
     {
@@ -85,42 +81,6 @@ class AbstractDeviceMessenger
             MQTT::connection()->loop(false, true);
 
             return $friendlyNames;
-        } catch (DataTransferException | RepositoryException | Exception $e) {
-            return ['error' => $e->getMessage()];
-        }
-    }
-
-    public function storeIdentifications(): void
-    {
-        $identifications = $this->getIdentifications();
-        $jsonIdentifications = json_decode($identifications);
-
-        foreach ($jsonIdentifications as $identification) {
-            if (Str::startsWith($identification->friendly_name, 'light')) {
-                $lighting = new Lighting();
-
-                $lighting->ieee_address = $identification->ieee_address;
-                $lighting->friendly_name = $identification->friendly_name;
-                $lighting->save();
-            }
-        }
-    }
-
-    protected function getIdentifications(): string|array
-    {
-        try {
-            MQTT::connection()->subscribe(
-                Zigbee2MqttUtility::ZIGBEE2MQTT_BRIDGE_DEVICES->value,
-                function (string $topic, string $message) {
-                    $this->message = $message;
-
-                    MQTT::connection()->interrupt();
-                },
-                1
-            );
-            MQTT::connection()->loop(false, true);
-
-            return $this->message;
         } catch (DataTransferException | RepositoryException | Exception $e) {
             return ['error' => $e->getMessage()];
         }

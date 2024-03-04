@@ -10,5 +10,5 @@ class Lighting extends Model
     use HasFactory;
 
     protected $table = 'devices.lights';
-    protected $fillable = ['ieee_address', 'friendly_name'];
+    protected $fillable = ['ieee_address', 'friendly_name', 'brightness', 'energy', 'linkquality', 'power', 'state'];
 }
