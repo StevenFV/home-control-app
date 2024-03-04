@@ -57,12 +57,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('devices/lighting/set', [AbstractDeviceMessenger::class, 'publishMessage'])->name(
                 'lighting.set'
             );
-            Route::post(
-                'devices/lighting/store-identifications',
-                [AbstractDeviceMessenger::class, 'storeIdentifications']
-            )->name(
-                'lighting.storeIdentifications'
-            );
         }
     );
 });
