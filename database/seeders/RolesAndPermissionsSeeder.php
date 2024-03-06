@@ -7,6 +7,7 @@ use App\Enums\PermissionRole;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -15,6 +16,9 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
+        // Reset cached roles and permissions
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
         // Create roles
         Role::create(['name' => PermissionRole::ADMIN->value]);
 
