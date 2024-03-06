@@ -16,6 +16,7 @@ use PhpMqtt\Client\Facades\MQTT;
 class DeviceIdentificationStorage extends Command implements DeviceDataStoreInterface
 {
     use StorageModel;
+
     protected $signature = 'app:device-identification-storage {model}';
     protected $description = 'Get device identifications from mqtt broker and put to home-control-app database';
     private string $message;
@@ -67,7 +68,7 @@ class DeviceIdentificationStorage extends Command implements DeviceDataStoreInte
             MQTT::connection()->loop(false, true);
 
             return $this->message;
-        } catch (DataTransferException|RepositoryException|Exception $e) {
+        } catch (DataTransferException | RepositoryException | Exception $e) {
             return ['error' => $e->getMessage()];
         }
     }
