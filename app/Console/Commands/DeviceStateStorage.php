@@ -15,6 +15,7 @@ use PhpMqtt\Client\Facades\MQTT;
 class DeviceStateStorage extends Command implements DeviceDataStoreInterface
 {
     use StorageModel;
+
     protected $signature = 'app:device-state-storage {model}';
     protected $description = 'Get device states from mqtt broker and put to home-control-app database';
 

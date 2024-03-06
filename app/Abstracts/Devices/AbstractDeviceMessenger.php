@@ -13,7 +13,6 @@ use PhpMqtt\Client\Facades\MQTT;
 
 class AbstractDeviceMessenger
 {
-
     public function __construct()
     {
         $devicePolicy = new DevicePolicy();
