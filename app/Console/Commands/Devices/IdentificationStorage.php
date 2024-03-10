@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Devices;
 
 use App\Enums\Zigbee2MqttUtility;
 use App\Interfaces\Devices\DeviceDataStoreInterface;
@@ -13,7 +13,7 @@ use PhpMqtt\Client\Exceptions\DataTransferException;
 use PhpMqtt\Client\Exceptions\RepositoryException;
 use PhpMqtt\Client\Facades\MQTT;
 
-class DeviceIdentificationStorage extends Command implements DeviceDataStoreInterface
+class IdentificationStorage extends Command implements DeviceDataStoreInterface
 {
     use StorageModel;
 

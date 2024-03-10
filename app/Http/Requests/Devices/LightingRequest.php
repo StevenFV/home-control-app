@@ -9,7 +9,7 @@ class LightingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'topic' => ['required', 'string', 'max:81'],
+            'friendlyName' => ['required', 'string', 'max:81'],
             'set' => ['required', 'string', 'size:4', 'in:/set'],
             'toggle' => ['required', 'string', 'size:6', 'in:TOGGLE'],
         ];

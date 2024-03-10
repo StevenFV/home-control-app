@@ -13,36 +13,36 @@ const TOPIC_TITLE = 'lighting.topic_title';
 const MESSAGE_LABEL = 'lighting.message_label';
 
 const props = defineProps({
-    subscribeTopicMessage: {
+    lightingData: {
         type: Object,
         default: null,
     }
 })
 
-const transText = (strKey, varKey = null) => {
+const translateText = (strKey, varKey = null) => {
   return varKey ? trans(`${strKey}.${varKey}`).toUpperCase() : trans(`${strKey}`).toUpperCase();
 }
 
 const displayText = (strKey, varKey = null, value = null) => {
-  return value ? `${transText(strKey, varKey)}${value}` : transText(strKey, varKey);
+  return value ? `${translateText(strKey, varKey)}${value}` : translateText(strKey, varKey);
 }
 
 const state = reactive({});
-const data = reactive(props.subscribeTopicMessage);
+const data = reactive(props.lightingData);
 
 const updateLightingState = () => {
   for (const index of data) {
-    const topic = index?.topic;
-    state[topic] = index?.message?.state === 'ON';
+    const friendlyName = index?.friendlyName;
+    state[friendlyName] = index?.data?.state === 'ON';
   }
 }
 
 updateLightingState();
 
 const lightingStates = computed(() => {
-    return Object.keys(state).map(topic => ({
-        topic,
-        state: state[topic] ? 'ON' : 'OFF'
+    return Object.keys(state).map(friendlyName => ({
+        friendlyName,
+        state: state[friendlyName] ? 'ON' : 'OFF'
     }));
 });
 
@@ -75,24 +75,24 @@ const toggleLight = async (newStates, changedKey) => {
         <template #header>
             <div class="grid grid-cols-3 gap-6">
                 <div
-                    v-for="(item, indexItem) in subscribeTopicMessage"
-                    :key="indexItem"
+                    v-for="item in lightingData"
+                    :key="item.friendlyName"
                     class="bg-yellow-100 shadow-lg rounded-lg overflow-hidden m-6 col-3"
                 >
                     <div class="text-center pt-2 font-semibold text-xl text-gray-800 leading-tight">
-                        {{ displayText(TOPIC_TITLE, item.topic) }}
+                        {{ displayText(TOPIC_TITLE, item.friendlyName) }}
                     </div>
                     <div
-                        v-for="(value, label, indexValue) in item.message"
+                        v-for="(value, label, indexValue) in item.data"
                         :key="indexValue"
                         class="p-1"
                     >
-                        <template v-if="label">
+                        <template v-if="label && value">
                             {{ displayText(MESSAGE_LABEL, label, value) }}
                         </template>
                     </div>
                     <InputSwitch
-                        v-model="state[item.topic]"
+                        v-model="state[item.friendlyName]"
                         class="ml-1"
                     />
                 </div>
