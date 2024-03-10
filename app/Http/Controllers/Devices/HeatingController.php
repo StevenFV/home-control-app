@@ -2,26 +2,25 @@
 
 namespace App\Http\Controllers\Devices;
 
-use App\Abstracts\Devices\AbstractDeviceMessenger;
+use App\Abstracts\Devices\AbstractDataConstructor;
 use App\DevicePolicy;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class HeatingController extends AbstractDeviceMessenger
+class HeatingController extends AbstractDataConstructor
 {
-    public function __construct()
+    public function __construct(Heating $heating)
     {
+        parent::__construct($heating);
+
         $devicePolicy = new DevicePolicy();
         $devicePolicy->check();
     }
 
     public function index(): Response
     {
-        // todosfv ajuste AbstractDeviceMessenger to can be
-        // todosfv implement from all devices class without change
-
         return Inertia::render('Heating/Index', [
-            'subscribeTopicMessage' => $this->getTopicMessage()
+            'heatingData' => $this->dataForFrontend()
         ]);
     }
 }

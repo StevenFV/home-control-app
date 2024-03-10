@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Devices;
 
 use App\Enums\Zigbee2MqttUtility;
 use App\Interfaces\Devices\DeviceDataStoreInterface;
@@ -12,12 +12,12 @@ use PhpMqtt\Client\Exceptions\DataTransferException;
 use PhpMqtt\Client\Exceptions\RepositoryException;
 use PhpMqtt\Client\Facades\MQTT;
 
-class DeviceStateStorage extends Command implements DeviceDataStoreInterface
+class DataStorage extends Command implements DeviceDataStoreInterface
 {
     use StorageModel;
 
-    protected $signature = 'app:device-state-storage {model}';
-    protected $description = 'Get device states from mqtt broker and put to home-control-app database';
+    protected $signature = 'app:device-data-storage {model}';
+    protected $description = 'Get device data from mqtt broker and put to home-control-app database';
 
 
     public function handle(): void
@@ -26,8 +26,8 @@ class DeviceStateStorage extends Command implements DeviceDataStoreInterface
 
         $model = $this->argumentModel($stringModel);
 
-        $deviceStateStorage = app(self::class);
-        $deviceStateStorage->store($model);
+        $deviceDataStorage = app(self::class);
+        $deviceDataStorage->store($model);
     }
 
     public function store(Model $model): void
@@ -35,7 +35,7 @@ class DeviceStateStorage extends Command implements DeviceDataStoreInterface
         $informations = $this->data($model);
 
         array_map(function ($information) use ($model) {
-            $this->updateOrCreateDeviceState($model, $information);
+            $this->updateOrCreateDeviceData($model, $information);
         }, $informations);
     }
 
@@ -66,19 +66,17 @@ class DeviceStateStorage extends Command implements DeviceDataStoreInterface
         }
     }
 
-    private function updateOrCreateDeviceState(Model $model, array $information): void
+    private function updateOrCreateDeviceData(Model $model, array $information): void
     {
         $friendlyName = str_replace("zigbee2mqtt/", "", $information['topic']);
-        $states = json_decode($information['message']);
-        $modelFillables = $model->getFillable();
-        $friendlyNameAttribute = $modelFillables[1];
-        $modelFillableStates = array_slice($modelFillables, 2);
+        $message = json_decode($information['message']);
+        $deviceData = array_slice($model->getFillable(), 2);
 
-        foreach ($modelFillableStates as $state) {
+        foreach ($deviceData as $data) {
             $model->updateOrCreate(
-                [$friendlyNameAttribute => $friendlyName],
+                ['friendly_name' => $friendlyName],
                 [
-                    $state => $states->$state ?? null,
+                    $data => $message->$data ?? null,
                 ]
             );
         }

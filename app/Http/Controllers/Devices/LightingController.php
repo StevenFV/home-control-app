@@ -2,21 +2,26 @@
 
 namespace App\Http\Controllers\Devices;
 
-use App\Abstracts\Devices\AbstractDeviceMessenger;
+use App\Abstracts\Devices\AbstractDataConstructor;
+use App\DevicePolicy;
+use App\Models\Devices\Lighting;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class LightingController extends AbstractDeviceMessenger
+class LightingController extends AbstractDataConstructor
 {
-    public function __construct()
+    public function __construct(Lighting $lighting)
     {
-        parent::__construct();
+        parent::__construct($lighting);
+
+        $devicePolicy = new DevicePolicy();
+        $devicePolicy->check();
     }
 
     public function index(): Response
     {
         return Inertia::render('Lighting/Index', [
-            'subscribeTopicMessage' => $this->getTopicMessage()
+            'lightingData' => $this->dataForFrontend()
         ]);
     }
 }
