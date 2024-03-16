@@ -17,7 +17,7 @@ class IdentificationStorage extends Command implements DeviceDataStoreInterface
 {
     use StorageModel;
 
-    protected $signature = 'app:device-identification-storage {model}';
+    protected $signature = 'device:identification-storage {model}';
     protected $description = 'Get device identifications from mqtt broker and put to home-control-app database';
     private string $message;
 

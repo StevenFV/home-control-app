@@ -16,13 +16,13 @@ class DataStorage extends Command implements DeviceDataStoreInterface
 {
     use StorageModel;
 
-    protected $signature = 'app:device-data-storage {model}';
+    protected $signature = 'device:data-storage {deviceType}';
     protected $description = 'Get device data from mqtt broker and put to home-control-app database';
 
 
     public function handle(): void
     {
-        $stringModel = $this->argument('model');
+        $stringModel = $this->argument('deviceType');
 
         $model = $this->argumentModel($stringModel);
 

@@ -3,27 +3,58 @@
 namespace App\Console\Commands\Devices;
 
 use App\Enums\Zigbee2MqttUtility;
-use App\Http\Requests\Devices\LightingRequest;
+use App\Http\Requests\Devices\DeviceRequest;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use PhpMqtt\Client\Facades\MQTT;
 
 class PublishMessage extends Command
 {
-    protected $signature = 'app:publish-message';
+    protected $signature = 'device:publish-message';
 
     protected $description = 'Publish message to device';
 
-    public function handle(LightingRequest $request): void
+    private string $topic;
+
+    private string $message;
+
+    private string $deviceType;
+
+    public function handle(DeviceRequest $request): void
     {
-        $topic = Zigbee2MqttUtility::BASE_TOPIC->value . $request['friendlyName'] . $request['set'];
-        $message = json_encode(['state' => $request['toggle']]);
+        $this->topic = $this->createTopic($request);
+        $this->message = $this->createMessage($request);
+        $this->deviceType = $this->getDeviceType($request);
 
-        MQTT::publish($topic, $message);
+        $this->publishMessage();
+        $this->updateDeviceDataInDatabase();
+    }
+
+    private function createTopic(DeviceRequest $request): string
+    {
+        return Zigbee2MqttUtility::BASE_TOPIC->value . $request['friendlyName'] . $request['set'];
+    }
+
+    private function createMessage(DeviceRequest $request): string
+    {
+        return json_encode(['state' => $request['state']]);
+    }
+
+    private function getDeviceType(DeviceRequest $request): string
+    {
+        return $request['deviceType'];
+    }
+
+    private function publishMessage(): void
+    {
+        MQTT::publish($this->topic, $this->message);
         MQTT::disconnect();
+    }
 
-        sleep(1);
+    private function updateDeviceDataInDatabase(): void
+    {
+        sleep(env('DEVICE_STATE_UPDATE_DELAY'));
 
-        Artisan::call('app:device-data-storage', ['model' => 'Lighting']);
+        Artisan::call('device:data-storage', ['deviceType' => $this->deviceType]);
     }
 }
