@@ -12,22 +12,22 @@ use PhpMqtt\Client\Exceptions\DataTransferException;
 use PhpMqtt\Client\Exceptions\RepositoryException;
 use PhpMqtt\Client\Facades\MQTT;
 
-class DataStorage extends Command implements DeviceDataStoreInterface
+class StoreData extends Command implements DeviceDataStoreInterface
 {
     use StorageModel;
 
-    protected $signature = 'device:data-storage {deviceType}';
+    protected $signature = 'device:store-data {deviceModel}';
     protected $description = 'Get device data from mqtt broker and put to home-control-app database';
 
 
     public function handle(): void
     {
-        $stringModel = $this->argument('deviceType');
+        $stringModel = $this->argument('deviceModel');
 
         $model = $this->argumentModel($stringModel);
 
-        $deviceDataStorage = app(self::class);
-        $deviceDataStorage->store($model);
+        $deviceStoreData = app(self::class);
+        $deviceStoreData->store($model);
     }
 
     public function store(Model $model): void

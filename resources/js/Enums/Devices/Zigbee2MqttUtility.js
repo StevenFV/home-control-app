@@ -4,6 +4,6 @@ export default Object.freeze({
     TOPIC_SET: '/set',
     KEY_COMMAND_STATE: 'state',
     COMMAND_TOGGLE: 'TOGGLE',
-    KEY_DEVICE_TYPE: 'deviceType',
+    KEY_DEVICE_MODEL: 'deviceModel',
     LIGHTING: 'Lighting'
 });
