@@ -18,13 +18,13 @@ class PublishMessage extends Command
 
     private string $message;
 
-    private string $deviceType;
+    private string $deviceModel;
 
     public function handle(DeviceRequest $request): void
     {
         $this->topic = $this->createTopic($request);
         $this->message = $this->createMessage($request);
-        $this->deviceType = $this->getDeviceType($request);
+        $this->deviceModel = $this->getDeviceModel($request);
 
         $this->publishMessage();
         $this->updateDeviceDataInDatabase();
@@ -40,9 +40,9 @@ class PublishMessage extends Command
         return json_encode(['state' => $request['state']]);
     }
 
-    private function getDeviceType(DeviceRequest $request): string
+    private function getDeviceModel(DeviceRequest $request): string
     {
-        return $request['deviceType'];
+        return $request['deviceModel'];
     }
 
     private function publishMessage(): void
@@ -55,6 +55,6 @@ class PublishMessage extends Command
     {
         sleep(env('DEVICE_STATE_UPDATE_DELAY'));
 
-        Artisan::call('device:data-storage', ['deviceType' => $this->deviceType]);
+        Artisan::call('device:store-data', ['deviceModel' => $this->deviceModel]);
     }
 }

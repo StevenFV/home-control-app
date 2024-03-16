@@ -13,22 +13,22 @@ use PhpMqtt\Client\Exceptions\DataTransferException;
 use PhpMqtt\Client\Exceptions\RepositoryException;
 use PhpMqtt\Client\Facades\MQTT;
 
-class IdentificationStorage extends Command implements DeviceDataStoreInterface
+class StoreIdentification extends Command implements DeviceDataStoreInterface
 {
     use StorageModel;
 
-    protected $signature = 'device:identification-storage {model}';
+    protected $signature = 'device:store-identification {deviceModel}';
     protected $description = 'Get device identifications from mqtt broker and put to home-control-app database';
     private string $message;
 
     public function handle(): void
     {
-        $stringModel = $this->argument('model');
+        $stringModel = $this->argument('deviceModel');
 
         $model = $this->argumentModel($stringModel);
 
-        $deviceIdentificationStorage = app(self::class);
-        $deviceIdentificationStorage->store($model);
+        $deviceStoreIdentification = app(self::class);
+        $deviceStoreIdentification->store($model);
     }
 
     public function store(Model $model): void
