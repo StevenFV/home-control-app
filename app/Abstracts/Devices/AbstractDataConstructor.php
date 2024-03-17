@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 abstract class AbstractDataConstructor
 {
-    private Model $model;
+    protected Model $model;
 
     public function __construct(Model $model)
     {
@@ -16,15 +16,18 @@ abstract class AbstractDataConstructor
 
     protected function dataForFrontend(): Collection
     {
-        return $this->model->all()->map(function ($model) {
-            $deviceData = array_slice($this->model->getFillable(), 2);
+        $fillableAttributes = $this->model->getFillable();
 
+        return $this->model->all()->map(function ($model) use ($fillableAttributes) {
             $data = [
-                'friendlyName' => $model->friendly_name
+                'friendlyName' => $model->friendly_name,
+                'data' => []
             ];
 
-            foreach ($deviceData as $name) {
-                $data['data'][$name] = $model->$name;
+            foreach ($fillableAttributes as $attribute) {
+                if ($attribute !== 'friendly_name') {
+                    $data['data'][$attribute] = $model->$attribute;
+                }
             }
 
             return $data;
