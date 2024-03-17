@@ -3,32 +3,43 @@
 namespace App\Console\Commands\Devices;
 
 use App\Enums\Zigbee2MqttUtility;
-use App\Interfaces\Devices\DeviceDataStoreInterface;
-use App\Traits\Devices\StorageModel;
-use Exception;
+use App\Interfaces\Devices\DeviceStoreInterface;
+use App\Traits\Devices\DeviceModelNamespaceResolver;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use PhpMqtt\Client\Contracts\MqttClient;
 use PhpMqtt\Client\Exceptions\DataTransferException;
+use PhpMqtt\Client\Exceptions\InvalidMessageException;
+use PhpMqtt\Client\Exceptions\MqttClientException;
+use PhpMqtt\Client\Exceptions\ProtocolViolationException;
 use PhpMqtt\Client\Exceptions\RepositoryException;
 use PhpMqtt\Client\Facades\MQTT;
 
-class StoreIdentification extends Command implements DeviceDataStoreInterface
+class StoreIdentification extends Command implements DeviceStoreInterface
 {
-    use StorageModel;
+    use DeviceModelNamespaceResolver;
 
-    protected $signature = 'device:store-identification {deviceModel}';
+    protected $signature = 'device:store-identification {deviceModelClassName}';
     protected $description = 'Get device identifications from mqtt broker and put to home-control-app database';
     private string $message;
+    private MqttClient $client;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->client = MQTT::connection();
+    }
 
     public function handle(): void
     {
-        $stringModel = $this->argument('deviceModel');
+        $deviceModelClassName = $this->argument('deviceModelClassName');
 
-        $model = $this->argumentModel($stringModel);
+        $deviceModelClassNameWithNameSpace = $this->getDeviceModelClassNameWithNameSpace($deviceModelClassName);
 
         $deviceStoreIdentification = app(self::class);
-        $deviceStoreIdentification->store($model);
+        $deviceStoreIdentification->store($deviceModelClassNameWithNameSpace);
     }
 
     public function store(Model $model): void
@@ -45,31 +56,41 @@ class StoreIdentification extends Command implements DeviceDataStoreInterface
 
     public function data(Model $model): array
     {
-        $deviceInformation = $this->communicate(Zigbee2MqttUtility::ZIGBEE2MQTT_BRIDGE_DEVICES->value);
-        $decodedDeviceInformation = json_decode($deviceInformation);
+        $mqttMessages = $this->fetchAndProcessMqttMessages(Zigbee2MqttUtility::ZIGBEE2MQTT_BRIDGE_DEVICES->value);
+
+        $parsedMqttMessages = json_decode($mqttMessages);
 
         $modelBaseName = $this->getModelBaseName($model);
 
-        return $this->getFilteredAndFormattedIdentifications($decodedDeviceInformation, $modelBaseName);
+        return $this->getFilteredAndFormattedIdentifications($parsedMqttMessages, $modelBaseName);
     }
 
-    public function communicate($topicFilter): string|array
+    public function fetchAndProcessMqttMessages($topicFilter): string | array
     {
         try {
-            MQTT::connection()->subscribe(
+            $this->client->subscribe(
                 $topicFilter,
                 function (string $topic, string $message) {
                     $this->message = $message;
 
-                    MQTT::connection()->interrupt();
+                    $this->client->interrupt();
                 },
-                1
             );
-            MQTT::connection()->loop(false, true);
+            $this->client->loop();
 
             return $this->message;
-        } catch (DataTransferException | RepositoryException | Exception $e) {
-            return ['error' => $e->getMessage()];
+        } catch (
+            ProtocolViolationException |
+            InvalidMessageException |
+            MqttClientException |
+            RepositoryException |
+            DataTransferException
+            $exception
+        ) {
+            $this->error(
+                'Class: "StoreIdentification" Method: "fetchAndProcessMqttMessages" error: ' . $exception->getMessage()
+            );
+            exit();
         }
     }
 
@@ -78,18 +99,29 @@ class StoreIdentification extends Command implements DeviceDataStoreInterface
         $tableName = $model->getTable();
         return Str::singular(Str::after($tableName, '.'));
     }
+
     private function getFilteredAndFormattedIdentifications(
-        mixed $decodedDeviceInformation,
+        array $parsedMqttMessages,
         string $modelBaseName
     ): array {
-        $filteredIdentifications = array_filter($decodedDeviceInformation, function ($info) use ($modelBaseName) {
-            return Str::startsWith($info->friendly_name, $modelBaseName);
-        });
+        $filteredIdentifications = $this->filterIdentifications($parsedMqttMessages, $modelBaseName);
 
-        return array_map(function ($info) {
+        return $this->formatIdentifications($filteredIdentifications);
+    }
+
+    private function filterIdentifications(array $parsedMqttMessages, string $modelBaseName): array
+    {
+        return array_filter($parsedMqttMessages, function ($identification) use ($modelBaseName) {
+            return Str::startsWith($identification->friendly_name, $modelBaseName);
+        });
+    }
+
+    private function formatIdentifications(array $filteredIdentifications): array
+    {
+        return array_map(function ($identification) {
             return [
-                'ieee_address' => $info->ieee_address,
-                'friendly_name' => $info->friendly_name
+                'ieee_address' => $identification->ieee_address,
+                'friendly_name' => $identification->friendly_name
             ];
         }, $filteredIdentifications);
     }

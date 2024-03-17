@@ -23,7 +23,7 @@ class DeviceRequest extends FormRequest
             'friendlyName' => ['required', 'string', 'max:81'],
             'set' => ['required', 'string', 'size:4', 'in:/set'],
             'state' => ['required', 'string'],
-            'deviceModel' => ['required', 'string', $startWithCapitalLetter]
+            'deviceModelClassName' => ['required', 'string', $startWithCapitalLetter]
         ];
     }
 }

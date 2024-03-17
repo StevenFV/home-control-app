@@ -3,31 +3,42 @@
 namespace App\Console\Commands\Devices;
 
 use App\Enums\Zigbee2MqttUtility;
-use App\Interfaces\Devices\DeviceDataStoreInterface;
-use App\Traits\Devices\StorageModel;
-use Exception;
+use App\Interfaces\Devices\DeviceStoreInterface;
+use App\Traits\Devices\DeviceModelNamespaceResolver;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
+use PhpMqtt\Client\Contracts\MqttClient;
 use PhpMqtt\Client\Exceptions\DataTransferException;
+use PhpMqtt\Client\Exceptions\InvalidMessageException;
+use PhpMqtt\Client\Exceptions\MqttClientException;
+use PhpMqtt\Client\Exceptions\ProtocolViolationException;
 use PhpMqtt\Client\Exceptions\RepositoryException;
 use PhpMqtt\Client\Facades\MQTT;
 
-class StoreData extends Command implements DeviceDataStoreInterface
+class StoreData extends Command implements DeviceStoreInterface
 {
-    use StorageModel;
+    use DeviceModelNamespaceResolver;
 
-    protected $signature = 'device:store-data {deviceModel}';
+    protected $signature = 'device:store-data {deviceModelClassName}';
     protected $description = 'Get device data from mqtt broker and put to home-control-app database';
+    private MqttClient $client;
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->client = MQTT::connection();
+    }
 
     public function handle(): void
     {
-        $stringModel = $this->argument('deviceModel');
+        $deviceModelClassName = $this->argument('deviceModelClassName');
 
-        $model = $this->argumentModel($stringModel);
+        $deviceModelClassNameWithNameSpace = $this->getDeviceModelClassNameWithNameSpace($deviceModelClassName);
 
         $deviceStoreData = app(self::class);
-        $deviceStoreData->store($model);
+
+        $deviceStoreData->store($deviceModelClassNameWithNameSpace);
     }
 
     public function store(Model $model): void
@@ -39,31 +50,51 @@ class StoreData extends Command implements DeviceDataStoreInterface
         }, $informations);
     }
 
-    public function communicate($topicFilter): string|array
+    public function data(Model $model): array
+    {
+        $friendlyNames = $model::distinct('friendly_name')->pluck('friendly_name')->toArray();
+        $topicFilters = array_map(function ($friendlyName) {
+            return Zigbee2MqttUtility::BASE_TOPIC->value . $friendlyName;
+        }, $friendlyNames);
+        return array_map([$this, 'fetchAndProcessMqttMessages'], $topicFilters);
+    }
+
+    public function fetchAndProcessMqttMessages($topicFilter): string | array
     {
         try {
-            MQTT::connection()->subscribe(
-                Zigbee2MqttUtility::BASE_TOPIC->value . $topicFilter,
-                function (string $topic, string $message) use (&$callback) {
-                    $callback = [
-                        'topic' => $topic,
-                        'message' => $message
-                    ];
-                    MQTT::connection()->interrupt();
+            $this->client->subscribe(
+                $topicFilter,
+                function (string $topic, string $message) use (&$messageDetails) {
+                    $messageDetails = $this->extractMessageDetails($topic, $message);
+                    $this->client->interrupt();
                 },
-                0
             );
-            MQTT::publish(
-                Zigbee2MqttUtility::BASE_TOPIC->value . $topicFilter . Zigbee2MqttUtility::GET->value,
+            $this->client->publish(
+                $topicFilter . Zigbee2MqttUtility::GET->value,
                 Zigbee2MqttUtility::STATE_DEVICE_PAYLOAD->value
             );
-            MQTT::connection()->loop();
+            $this->client->loop();
 
-            return $callback;
-        } catch (DataTransferException | RepositoryException | Exception $e) {
-            $this->error('Error message: ' . $e->getMessage());
+            return $messageDetails;
+        } catch (
+            ProtocolViolationException |
+            InvalidMessageException |
+            MqttClientException |
+            RepositoryException |
+            DataTransferException
+            $exception
+        ) {
+            $this->error('Class: "StoreData" Method: "fetchAndProcessMqttMessages" error: ' . $exception->getMessage());
             exit();
         }
+    }
+
+    private function extractMessageDetails(string $topic, string $message): array
+    {
+        return [
+            'topic' => $topic,
+            'message' => $message
+        ];
     }
 
     private function updateOrCreateDeviceData(Model $model, array $information): void
@@ -80,11 +111,5 @@ class StoreData extends Command implements DeviceDataStoreInterface
                 ]
             );
         }
-    }
-
-    public function data(Model $model): array
-    {
-        $friendlyNames = $model::distinct('friendly_name')->pluck('friendly_name')->toArray();
-        return array_map([$this, 'communicate'], $friendlyNames);
     }
 }

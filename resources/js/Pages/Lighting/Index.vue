@@ -59,7 +59,7 @@ const toggleLight = async (newStates, changedKey) => {
   const changedItem = newStates[changedKey];
   changedItem[Zigbee2MqttUtility.KEY_SET] = Zigbee2MqttUtility.TOPIC_SET;
   changedItem[Zigbee2MqttUtility.KEY_COMMAND_STATE] = Zigbee2MqttUtility.COMMAND_TOGGLE;
-  changedItem[Zigbee2MqttUtility.KEY_DEVICE_MODEL] = Zigbee2MqttUtility.LIGHTING;
+  changedItem[Zigbee2MqttUtility.KEY_DEVICE_MODEL_CLASS_NAME] = Zigbee2MqttUtility.LIGHTING;
 
   try {
     await axios.post(route('lighting.set'), changedItem);
