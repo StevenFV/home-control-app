@@ -4,7 +4,7 @@ namespace App\Console\Commands\Devices;
 
 use App\Enums\Zigbee2MqttUtility;
 use App\Interfaces\Devices\DeviceStoreInterface;
-use App\Traits\Devices\DeviceModelNamespaceResolver;
+use App\Traits\Devices\DeviceModelNamespaceResolverTrait;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use PhpMqtt\Client\Contracts\MqttClient;
@@ -17,18 +17,10 @@ use PhpMqtt\Client\Facades\MQTT;
 
 class StoreData extends Command implements DeviceStoreInterface
 {
-    use DeviceModelNamespaceResolver;
+    use DeviceModelNamespaceResolverTrait;
 
     protected $signature = 'device:store-data {deviceModelClassName}';
     protected $description = 'Get device data from mqtt broker and put to home-control-app database';
-    private MqttClient $client;
-
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->client = MQTT::connection();
-    }
 
     public function handle(): void
     {
@@ -61,19 +53,21 @@ class StoreData extends Command implements DeviceStoreInterface
 
     public function fetchAndProcessMqttMessages($topicFilter): string | array
     {
+        $mqtt = MQTT::connection();
+
         try {
-            $this->client->subscribe(
+            $mqtt->subscribe(
                 $topicFilter,
-                function (string $topic, string $message) use (&$messageDetails) {
+                function (string $topic, string $message) use ($mqtt, &$messageDetails) {
                     $messageDetails = $this->extractMessageDetails($topic, $message);
-                    $this->client->interrupt();
+                    $mqtt->interrupt();
                 },
             );
-            $this->client->publish(
+            $mqtt->publish(
                 $topicFilter . Zigbee2MqttUtility::GET->value,
                 Zigbee2MqttUtility::STATE_DEVICE_PAYLOAD->value
             );
-            $this->client->loop();
+            $mqtt->loop();
 
             return $messageDetails;
         } catch (
@@ -84,8 +78,7 @@ class StoreData extends Command implements DeviceStoreInterface
             DataTransferException
             $exception
         ) {
-            $this->error('Class: "StoreData" Method: "fetchAndProcessMqttMessages" error: ' . $exception->getMessage());
-            exit();
+            return $exception->getMessage();
         }
     }
 

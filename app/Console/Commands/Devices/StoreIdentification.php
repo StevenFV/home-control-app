@@ -4,11 +4,10 @@ namespace App\Console\Commands\Devices;
 
 use App\Enums\Zigbee2MqttUtility;
 use App\Interfaces\Devices\DeviceStoreInterface;
-use App\Traits\Devices\DeviceModelNamespaceResolver;
+use App\Traits\Devices\DeviceModelNamespaceResolverTrait;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use PhpMqtt\Client\Contracts\MqttClient;
 use PhpMqtt\Client\Exceptions\DataTransferException;
 use PhpMqtt\Client\Exceptions\InvalidMessageException;
 use PhpMqtt\Client\Exceptions\MqttClientException;
@@ -18,19 +17,11 @@ use PhpMqtt\Client\Facades\MQTT;
 
 class StoreIdentification extends Command implements DeviceStoreInterface
 {
-    use DeviceModelNamespaceResolver;
+    use DeviceModelNamespaceResolverTrait;
 
     protected $signature = 'device:store-identification {deviceModelClassName}';
     protected $description = 'Get device identifications from mqtt broker and put to home-control-app database';
     private string $message;
-    private MqttClient $client;
-
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->client = MQTT::connection();
-    }
 
     public function handle(): void
     {
@@ -38,8 +29,7 @@ class StoreIdentification extends Command implements DeviceStoreInterface
 
         $deviceModelClassNameWithNameSpace = $this->getDeviceModelClassNameWithNameSpace($deviceModelClassName);
 
-        $deviceStoreIdentification = app(self::class);
-        $deviceStoreIdentification->store($deviceModelClassNameWithNameSpace);
+        $this->store($deviceModelClassNameWithNameSpace);
     }
 
     public function store(Model $model): void
@@ -67,16 +57,18 @@ class StoreIdentification extends Command implements DeviceStoreInterface
 
     public function fetchAndProcessMqttMessages($topicFilter): string | array
     {
+        $mqtt = MQTT::connection();
+
         try {
-            $this->client->subscribe(
+            $mqtt->subscribe(
                 $topicFilter,
-                function (string $topic, string $message) {
+                function (string $topic, string $message) use ($mqtt) {
                     $this->message = $message;
 
-                    $this->client->interrupt();
+                    $mqtt->interrupt();
                 },
             );
-            $this->client->loop();
+            $mqtt->loop();
 
             return $this->message;
         } catch (
@@ -87,10 +79,7 @@ class StoreIdentification extends Command implements DeviceStoreInterface
             DataTransferException
             $exception
         ) {
-            $this->error(
-                'Class: "StoreIdentification" Method: "fetchAndProcessMqttMessages" error: ' . $exception->getMessage()
-            );
-            exit();
+            return $exception->getMessage();
         }
     }
 

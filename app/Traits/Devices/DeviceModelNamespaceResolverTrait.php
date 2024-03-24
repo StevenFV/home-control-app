@@ -2,15 +2,16 @@
 
 namespace App\Traits\Devices;
 
-trait DeviceModelNamespaceResolver
+use Illuminate\Database\Eloquent\Model;
+
+trait DeviceModelNamespaceResolverTrait
 {
-    public function getDeviceModelClassNameWithNameSpace($deviceModelClassName)
+    public function getDeviceModelClassNameWithNameSpace($deviceModelClassName): Model
     {
         $namespace = 'App\Models\Devices\\';
 
         if (!class_exists($namespace . $deviceModelClassName)) {
-            $this->error('Invalid model class name provided.');
-            exit();
+            abort(404, 'Model class not found.');
         }
 
         return app($namespace . $deviceModelClassName);
