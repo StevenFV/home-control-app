@@ -19,7 +19,7 @@ class PasswordUpdateTest extends TestCase
             ->actingAs($user)
             ->from('/profile')
             ->put('/password', [
-                'current_password' => env('APP_PASSWORD'),
+                'current_password' => config('auth.defaults.passwords'),
                 'password' => 'new-password',
                 'password_confirmation' => 'new-password',
             ]);

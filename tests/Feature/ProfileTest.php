@@ -68,7 +68,7 @@ class ProfileTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->delete('/profile', [
-                'password' => env('APP_PASSWORD'),
+                'password' => config('auth.defaults.passwords'),
             ]);
 
         $response
