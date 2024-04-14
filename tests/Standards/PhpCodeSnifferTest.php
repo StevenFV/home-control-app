@@ -3,20 +3,14 @@
 namespace Standards;
 
 use Symfony\Component\Process\Process;
-use Tests\TestCase;
 
-class PhpCodeSnifferTest extends TestCase
-{
-    /** @test */
-    public function it_runs_phpcs_with_verification_for_warnings_and_errors(): void
-    {
-        $command = './vendor/bin/phpcs';
+it('runs phpcs with verification for warnings and errors', function () {
+    $command = './vendor/bin/phpcs';
 
-        $process = Process::fromShellCommandline($command);
-        $process->run();
+    $process = Process::fromShellCommandline($command);
+    $process->run();
 
-        $output = $process->getOutput();
+    $output = $process->getOutput();
 
-        expect($output)->toBe('', 'phpcs errors and/or warnings:');
-    }
-}
+    expect($output)->toBe('', 'phpcs errors and/or warnings:');
+});

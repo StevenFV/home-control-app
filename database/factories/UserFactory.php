@@ -23,7 +23,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => bcrypt(env('APP_PASSWORD')),
+            'password' => bcrypt(config('auth.defaults.passwords')),
             'remember_token' => Str::random(10),
         ];
     }
