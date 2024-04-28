@@ -5,47 +5,41 @@ namespace Tests\Feature\Auth;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
-use Tests\TestCase;
 
-class PasswordUpdateTest extends TestCase
-{
-    use DatabaseTransactions;
+uses(DatabaseTransactions::class);
 
-    public function test_password_can_be_updated(): void
-    {
-        $user = User::factory()->create();
+it('test password can be updated', function () {
+    $user = User::factory()->create();
 
-        $response = $this
-            ->actingAs($user)
-            ->from('/profile')
-            ->put('/password', [
-                'current_password' => config('auth.defaults.passwords'),
-                'password' => 'new-password',
-                'password_confirmation' => 'new-password',
-            ]);
+    $response = $this
+        ->actingAs($user)
+        ->from('/profile')
+        ->put('/password', [
+            'current_password' => config('auth.defaults.passwords'),
+            'password' => 'new-password',
+            'password_confirmation' => 'new-password',
+        ]);
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile');
 
-        $this->assertTrue(Hash::check('new-password', $user->refresh()->password));
-    }
+    $this->assertTrue(Hash::check('new-password', $user->refresh()->password));
+});
 
-    public function test_correct_password_must_be_provided_to_update_password(): void
-    {
-        $user = User::factory()->create();
+it('test correct password must be provided to update password', function () {
+    $user = User::factory()->create();
 
-        $response = $this
-            ->actingAs($user)
-            ->from('/profile')
-            ->put('/password', [
-                'current_password' => 'wrong-password',
-                'password' => 'new-password',
-                'password_confirmation' => 'new-password',
-            ]);
+    $response = $this
+        ->actingAs($user)
+        ->from('/profile')
+        ->put('/password', [
+            'current_password' => 'wrong-password',
+            'password' => 'new-password',
+            'password_confirmation' => 'new-password',
+        ]);
 
-        $response
-            ->assertSessionHasErrors('current_password')
-            ->assertRedirect('/profile');
-    }
-}
+    $response
+        ->assertSessionHasErrors('current_password')
+        ->assertRedirect('/profile');
+});
