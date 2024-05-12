@@ -1,7 +1,5 @@
 <?php
 
-namespace Static;
-
 use Symfony\Component\Process\Process;
 
 it('runs eslint with verification for warnings and errors', function () {
