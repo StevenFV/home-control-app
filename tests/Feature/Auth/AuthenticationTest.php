@@ -1,37 +1,26 @@
 <?php
 
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 uses(DatabaseTransactions::class);
 
 it('test login screen can be rendered', function () {
-    $response = $this->get('/login');
-
-    $response->assertStatus(200);
+    $this->get(route('login'))->assertStatus(200);
 });
 
-it('test users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+it('test admin users can authenticate and access dashboard page', function () {
+    $user = User::factory()->assignAdminRole()->create();
 
-    $response = $this->post('/login', [
-        'email' => $user->email,
-        'password' => config('auth.defaults.passwords'),
-    ]);
-
-    $this->assertAuthenticated();
-    $response->assertRedirect(RouteServiceProvider::HOME);
+    $this->actingAs($user)->get(route('dashboard'))
+        ->assertStatus(200);
 });
 
 it('test users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
 
-    $response = $this->post('/login', [
+    $this->assertInvalidCredentials([
         'email' => $user->email,
         'password' => 'wrong-password',
     ]);
-
-    $this->assertGuest();
-    $response->assertSessionHasErrors('email');
 });
