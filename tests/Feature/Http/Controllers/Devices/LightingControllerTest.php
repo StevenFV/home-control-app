@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Devices\Lighting;
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
@@ -8,7 +9,7 @@ uses(DatabaseTransactions::class);
 uses(TestCase::class)->in('Feature');
 
 it('test lighting screen can be rendered to admin user', function () {
-    $adminUser = $this->createAdminUser();
+    $adminUser = User::factory()->assignAdminRole()->create();
 
     $response = $this->actingAs($adminUser)->get(route('lighting.index'));
 
@@ -16,7 +17,7 @@ it('test lighting screen can be rendered to admin user', function () {
 });
 
 it("test user don't have permission to render lighting screen", function () {
-    $userWithoutPermission = $this->createUserWithoutPermission();
+    $userWithoutPermission = User::factory()->create();
 
     $response = $this->actingAs($userWithoutPermission)->get(route('lighting.index'));
 
