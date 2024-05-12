@@ -1,26 +1,39 @@
 <?php
 
-namespace Tests\Feature\Http\Controllers\Devices;
-
+use App\Models\Devices\Lighting;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
-class LightingControllerTest extends TestCase
-{
-    use DatabaseTransactions;
+uses(DatabaseTransactions::class);
+uses(TestCase::class)->in('Feature');
 
-    public function test_lighting_controller_construct_can_be_initialise_correctly()
-    {
-        // Code to test the constructor of the LightingController
-    }
+it('test lighting screen can be rendered to admin user', function () {
+    $adminUser = $this->createAdminUser();
 
-    public function test_lighting_index_screen_can_be_rendered(): void
-    {
-        // Create a factory class to return user with different roles
-        // It will be used in different tests
+    $response = $this->actingAs($adminUser)->get(route('lighting.index'));
 
-        $response = $this->get('/devices/lighting');
+    $response->assertStatus(200);
+});
 
-        $response->assertStatus(200);
-    }
-}
+it("test user don't have permission to render lighting screen", function () {
+    $userWithoutPermission = $this->createUserWithoutPermission();
+
+    $response = $this->actingAs($userWithoutPermission)->get(route('lighting.index'));
+
+    $response->assertStatus(403);
+});
+
+it('returns correct lighting data', function () {
+    $lighting = Lighting::factory()->create();
+
+    expect($lighting->ieee_address)->toBeString()
+        ->and($lighting->friendly_name)->toBeString()
+        ->and($lighting->brightness)->toBeInt()
+        ->and($lighting->energy)->toBeFloat()
+        ->and($lighting->linkquality)->toBeInt()
+        ->and($lighting->power)->toBeFloat()
+        ->and($lighting->state)->toBeString()
+        ->and($lighting->updated_at)->toBeInstanceOf(DateTime::class)
+        ->and($lighting->created_at)->toBeInstanceOf(DateTime::class)
+        ->and($lighting->id)->toBeInt();
+});
