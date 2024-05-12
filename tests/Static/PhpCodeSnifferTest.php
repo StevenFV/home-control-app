@@ -1,6 +1,6 @@
 <?php
 
-namespace Standards;
+namespace Static;
 
 use Symfony\Component\Process\Process;
 
