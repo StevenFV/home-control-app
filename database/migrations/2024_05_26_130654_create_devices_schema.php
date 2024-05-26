@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class CreateDevicesSchema extends Migration
+return new class extends Migration
 {
     public function up(): void
     {
@@ -14,4 +14,4 @@ class CreateDevicesSchema extends Migration
     {
         DB::statement('DROP SCHEMA IF EXISTS devices');
     }
-}
+};
