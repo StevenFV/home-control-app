@@ -36,6 +36,10 @@ jobs:
           tools: composer:v2
           coverage: xdebug
 
+      - name: Create .env file
+        run: |
+          echo APP_KEY= >> .env
+
       - name: Install Dependencies
         run: composer install
 
