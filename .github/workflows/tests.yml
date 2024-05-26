@@ -38,6 +38,8 @@ jobs:
 
       - name: Create .env file
         run: |
+          echo APP_NAME="Home Control App" >> .env
+          echo APP_ENV=testing >> .env
           echo APP_KEY= >> .env
 
       - name: Install Dependencies
