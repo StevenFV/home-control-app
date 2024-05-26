@@ -50,6 +50,9 @@ jobs:
       - name: Make migrations
         run: php artisan migrate
 
+      - name: Seed the database with roles and permissions
+        run: php artisan db:seed --class=RolesAndPermissionsSeeder
+
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
