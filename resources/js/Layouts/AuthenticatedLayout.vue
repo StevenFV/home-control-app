@@ -97,7 +97,6 @@ const showingNavigationDropdown = ref(false);
                                     </template>
                                 </Dropdown>
                             </div>
-                            <!-- TODOSFV Add tooltip on globe with 'Switch language' text -->
                             <div class="shrink-0">
                                 <Link
                                     :href="route('locale', { locale: $page.props.locale })"

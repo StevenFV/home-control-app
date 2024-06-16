@@ -21,7 +21,7 @@ use Inertia\Inertia;
 |
 */
 
-// Switch language TODOSFV Check for console errors when language switch
+// Switch language
 Route::get('locale/{locale}', function (string $locale) {
     $locale === 'en' ? $locale = 'fr' : $locale = 'en';
     Session::Put('locale', $locale);
