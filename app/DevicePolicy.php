@@ -48,11 +48,11 @@ class DevicePolicy extends controller
 
     private function isIndex(Request $request): bool
     {
-        return optional($request->route())->getActionMethod() !== 'index'; // todosfv
+        return optional($request->route())->getActionMethod() !== 'index';
     }
 
     private function redirectUnauthorisedAction(): void
     {
-        abort(403, 'Unauthorized action.'); // todosfv
+        abort(403, 'Unauthorized action.');
     }
 }

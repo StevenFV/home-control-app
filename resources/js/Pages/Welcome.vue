@@ -54,7 +54,6 @@ defineProps({
                 >
                     {{ trans('app.register') }}
                 </Link>
-                <!-- TODOSFV Add tooltip on globe with 'Switch language' text -->
                 <Link
                     :href="route('locale', { locale: $page.props.locale })"
                     as="button"
