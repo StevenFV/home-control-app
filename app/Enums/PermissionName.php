@@ -11,8 +11,8 @@ enum PermissionName: string
     use Values;
 
     /*
-     * When this enum is modified, the enum "resources/js/Enums/PermissionName.js"
-     * have to be change too for consistance with Vue.js.
+     * When this enum is modified, the corresponding "resources/js/Enums/PermissionName.js" must also be changed to
+     * maintain consistency with Vue.js.
     */
 
     case VIEW_LIGHTING = 'view lighting';
