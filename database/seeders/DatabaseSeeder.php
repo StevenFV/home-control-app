@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             $this->assignPermissionsToRole($roleName, $permissions);
         }
 
-        $this->seadAdminUser();
+        $this->seedAdminUser();
     }
 
     private function resetCachedRolesPermissions(): void
@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
         $role->givePermissionTo($permissions);
     }
 
-    private function seadAdminUser(): void
+    private function seedAdminUser(): void
     {
         User::factory(1)->assignAdminRole()->create();
     }
