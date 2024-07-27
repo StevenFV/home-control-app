@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 abstract class AbstractDataConstructor
 {
-    protected Model $model;
+    private Model $model;
 
     public function __construct(Model $model)
     {

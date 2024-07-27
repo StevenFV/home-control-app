@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import axios from 'axios';
-import {computed, reactive, watch} from 'vue';
+import {computed, onMounted, onUnmounted, reactive, ref, watch} from 'vue';
 import {Head} from "@inertiajs/vue3";
 import InputSwitch from 'primevue/inputswitch';
 import {trans} from "laravel-vue-i18n";
@@ -18,6 +18,35 @@ const props = defineProps({
         default: null,
     }
 })
+
+const lightingData = ref(props.lightingData);
+
+async function fetchUpdatedLightingData() {
+    try {
+        const response = await axios.get(route('lighting.get'));
+        lightingData.value = response.data;
+    } catch (error) {
+        console.error('Failed to fetch updated lighting data:', error);
+    }
+}
+
+let intervalId;
+
+onMounted(() => {
+    fetchUpdatedLightingData();
+    intervalId = setInterval(fetchUpdatedLightingData, 50000);
+});
+
+onUnmounted(() => {
+    clearInterval(intervalId);
+});
+
+const sortedLightingData = computed(() => {
+  return lightingData.value.map(item => ({
+    ...item,
+    translatedTitle: displayText(TOPIC_TITLE, item.friendlyName)
+  })).sort((a, b) => a.translatedTitle.localeCompare(b.translatedTitle));
+});
 
 const translateText = (strKey, varKey = null) => {
   return varKey ? trans(`${strKey}.${varKey}`).toUpperCase() : trans(`${strKey}`).toUpperCase();
@@ -57,15 +86,18 @@ watch(lightingStates, (newStates, oldStates) => {
 
 const toggleLight = async (newStates, changedKey) => {
   const changedItem = newStates[changedKey];
+
   changedItem[Zigbee2MqttUtility.KEY_SET] = Zigbee2MqttUtility.TOPIC_SET;
   changedItem[Zigbee2MqttUtility.KEY_COMMAND_STATE] = Zigbee2MqttUtility.COMMAND_TOGGLE;
   changedItem[Zigbee2MqttUtility.KEY_DEVICE_MODEL_CLASS_NAME] = Zigbee2MqttUtility.LIGHTING;
 
-  try {
-    await axios.post(route('lighting.set'), changedItem);
-  } catch (error) {
-    console.error(error);
-  }
+    try {
+      await axios.post(route('lighting.set'), changedItem).then(() => {
+        fetchUpdatedLightingData();
+      });
+    } catch (error) {
+      console.error(error);
+    }
 }
 </script>
 
@@ -76,9 +108,9 @@ const toggleLight = async (newStates, changedKey) => {
         <template #header>
             <div class="grid grid-cols-3 gap-6">
                 <div
-                    v-for="item in lightingData"
+                    v-for="item in sortedLightingData"
                     :key="item.friendlyName"
-                    class="bg-yellow-100 shadow-lg rounded-lg overflow-hidden m-6 col-3"
+                    class="bg-green-400 shadow-lg rounded-lg overflow-hidden m-6 p-6 col-3"
                 >
                     <div class="text-center pt-2 font-semibold text-xl text-gray-800 leading-tight">
                         {{ displayText(TOPIC_TITLE, item.friendlyName) }}

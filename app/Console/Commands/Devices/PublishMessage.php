@@ -63,8 +63,6 @@ class PublishMessage extends Command
 
     private function updateDeviceDataInDatabase(): void
     {
-        sleep(env('MQTT_DEVICE_STATE_UPDATE_DELAY'));
-
         Artisan::call('device:store-data', ['deviceModelClassName' => $this->deviceModelClassName]);
     }
 }
