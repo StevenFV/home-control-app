@@ -55,6 +55,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         function () {
             Route::get('devices/lighting', [LightingController::class, 'index'])->name('lighting.index');
             Route::post('devices/lighting/set', [PublishMessage::class, 'handle'])->name('lighting.set');
+            Route::get('devices/lighting/get', [LightingController::class, 'fetchDataForFrontend'])
+                ->name('lighting.get');
         }
     );
 });
