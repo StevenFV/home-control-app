@@ -22,6 +22,17 @@ import RouterLink from '@/Components/RouterLink.vue';
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 const appLocale = window.document.getElementsByTagName('html')[0]?.lang || 'en';
 
+// Set the favicon link in the document head to be handled by Laravel route.
+function setFavicon() {
+    const link = document.createElement('link');
+    link.rel = 'icon';
+    link.type = 'image/x-icon';
+    link.href = '/favicon';
+    document.head.appendChild(link);
+}
+
+setFavicon();
+
 library.add(faGlobe)
 
 createInertiaApp({

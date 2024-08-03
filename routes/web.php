@@ -21,6 +21,16 @@ use Inertia\Inertia;
 |
 */
 
+// Define a route to handle requests for the favicon.ico file.
+// This route prevents a 404 error when the browser requests the favicon.ico.
+Route::get('/favicon', function () {
+    $path = public_path('favicon.ico');
+    if (file_exists($path)) {
+        return response()->file($path);
+    }
+    abort(404);
+});
+
 // Switch language
 Route::get('locale/{locale}', function (string $locale) {
     $locale === 'en' ? $locale = 'fr' : $locale = 'en';
